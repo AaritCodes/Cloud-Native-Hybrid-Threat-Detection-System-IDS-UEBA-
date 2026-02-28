@@ -1,0 +1,28 @@
+{
+  "email": {
+    "enabled": true,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "sender_email": "your-email@gmail.com",
+    "sender_password": "your-app-password",
+    "recipients": [
+      "admin@company.com",
+      "security@company.com"
+    ]
+  },
+  "thresholds": {
+    "critical": 0.8,
+    "high": 0.6,
+    "medium": 0.4,
+    "email_threshold": 0.6
+  },
+  "rate_limiting": {
+    "max_emails_per_hour": 10,
+    "cooldown_minutes": 5
+  },
+  "notifications": {
+    "console": true,
+    "file_logging": true,
+    "email": true
+  }
+}

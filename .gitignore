@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# AWS Credentials (IMPORTANT - Never commit these!)
+*.pem
+.aws/
+credentials
+config/alert_config.json
+
+# Logs (Don't commit logs)
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+models/*.pkl.tmp
+threat_alerts.json
+threat_alerts.log
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
