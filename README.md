@@ -279,7 +279,7 @@ Academic research project - 2026
 
 ## 👤 Author
 
-Aarit - Hybrid Threat Detection System
+Aarit Haldar - Hybrid Threat Detection System
 
 ---
 
