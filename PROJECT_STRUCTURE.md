@@ -1,248 +1,227 @@
-# 📁 Project Structure
+# Project Structure
 
-## Directory Layout
+**Date:** March 3, 2026  
+**Author:** Aarit Haldar
 
-```
-hybrid-threat-detection/
-│
-├── 📂 src/                              # Source Code
-│   ├── ids_engine.py                   # Network Intrusion Detection System
-│   ├── ueba_engine.py                  # User & Entity Behavior Analytics
-│   ├── threat_fusion_engine.py         # Risk Fusion Algorithm (60/40)
-│   ├── alert_system.py                 # Multi-channel Alert System
-│   ├── enhanced_main.py                # Main Detection Loop
-│   └── dashboard.py                    # Web Dashboard (Optional)
-│
-├── 📂 models/                           # Machine Learning Models
-│   ├── ddos_model.pkl                  # Network Anomaly Detection Model
-│   └── uba_model.pkl                   # User Behavior Model (Isolation Forest)
-│
-├── 📂 config/                           # Configuration Files
-│   └── alert_config.json               # Alert System Settings
-│
-├── 📂 tests/                            # Testing Tools
-│   └── attack_simulator.py             # DDoS Attack Simulator (300 threads)
-│
-├── 📂 docs/                             # Documentation
-│   ├── STUDY_GUIDE_Part1_Overview.md   # Project Overview & Concepts
-│   ├── STUDY_GUIDE_Part2_Code_Explained.md  # Code Walkthrough
-│   ├── STUDY_GUIDE_Part3_Demo_QA.md    # Demo Script & Q&A
-│   ├── STUDY_GUIDE_Quick_Reference.md  # Quick Reference Guide
-│   ├── DEMO_DAY_GUIDE.md               # Complete Demo Day Guide
-│   ├── README_Enhanced.md              # Enhanced Features Documentation
-│   ├── PROJECT_OUTPUT_SUMMARY.md       # Test Results Summary
-│   └── DASHBOARD_DEMO_SUMMARY.md       # Dashboard Documentation
-│
-├── 📂 presentation/                     # Presentation Materials
-│   ├── Hybrid_Threat_Detection_Presentation.pptx  # Main Presentation
-│   ├── Hybrid_Threat_Detection_Presentation_Updated.pptx  # With Novelty
-│   └── presentation.md                 # Markdown Version
-│
-├── 📂 logs/                             # Generated Logs (Auto-created)
-│   ├── threat_alerts.log               # Human-readable Log
-│   └── threat_alerts.json              # Machine-readable Log
-│
-├── 📂 venv/                             # Python Virtual Environment
-│
-├── 📄 README.md                         # Main Project README
-├── 📄 requirements.txt                  # Python Dependencies
-├── 📄 .gitignore                        # Git Ignore Rules
-├── 📄 run.py                            # Quick Start Script
-└── 📄 PROJECT_STRUCTURE.md              # This File
-```
+---
 
-## File Descriptions
-
-### Core Source Files (`src/`)
-
-#### `ids_engine.py` (Network Monitoring)
-- **Purpose**: Monitors AWS CloudWatch metrics for network anomalies
-- **Input**: CloudWatch NetworkIn, NetworkPacketsIn
-- **Output**: Network risk score (0.0 to 1.0)
-- **Key Features**:
-  - 5-minute rolling window
-  - Threshold-based detection
-  - Dynamic risk calculation
-
-#### `ueba_engine.py` (Behavior Analytics)
-- **Purpose**: Analyzes user behavior from CloudTrail logs
-- **Input**: AWS CloudTrail audit logs
-- **Output**: User risk score (0.0 to 1.0)
-- **Key Features**:
-  - Feature engineering (time, volume, diversity)
-  - Isolation Forest ML model
-  - Anomaly detection
-
-#### `threat_fusion_engine.py` (Risk Fusion)
-- **Purpose**: Combines network and user risks
-- **Input**: Network risk, User risk
-- **Output**: Final risk score + Threat level
-- **Key Features**:
-  - **Novel 60/40 weighted fusion**
-  - Four threat levels (CRITICAL, HIGH, MEDIUM, LOW)
-  - Context-aware classification
-
-#### `alert_system.py` (Alerting)
-- **Purpose**: Multi-channel alert management
-- **Output**: Console alerts, Email alerts, Log files
-- **Key Features**:
-  - Color-coded console alerts
-  - HTML email notifications
-  - Rate limiting (10 emails/hour)
-  - Configurable thresholds
-
-#### `enhanced_main.py` (Main System)
-- **Purpose**: Orchestrates all components
-- **Features**:
-  - 10-second detection cycles
-  - Statistics tracking
-  - Graceful error handling
-  - Continuous monitoring
-
-#### `dashboard.py` (Web Interface)
-- **Purpose**: Real-time web dashboard
-- **Features**:
-  - 4 interactive charts
-  - Auto-refresh (5 seconds)
-  - Status cards
-  - Alerts table
-
-### Configuration (`config/`)
-
-#### `alert_config.json`
-```json
-{
-  "email": {
-    "enabled": true,
-    "smtp_server": "smtp.gmail.com",
-    "smtp_port": 587,
-    "sender_email": "your-email@gmail.com",
-    "recipients": ["admin@company.com"]
-  },
-  "thresholds": {
-    "critical": 0.8,
-    "high": 0.6,
-    "medium": 0.4
-  },
-  "rate_limiting": {
-    "max_emails_per_hour": 10
-  }
-}
-```
-
-### Testing (`tests/`)
-
-#### `attack_simulator.py`
-- **Purpose**: Simulates DDoS attack for testing
-- **Parameters**:
-  - 300 concurrent threads
-  - 60-second duration
-  - HTTP GET flood
-- **Target**: EC2 instance
-
-### Documentation (`docs/`)
-
-#### Study Guides (Read in Order)
-1. **Part 1 - Overview**: Concepts, architecture, math
-2. **Part 2 - Code Explained**: Line-by-line code walkthrough
-3. **Part 3 - Demo & Q&A**: Demo script, questions, answers
-4. **Quick Reference**: Daily review guide
-
-#### Other Documentation
-- **DEMO_DAY_GUIDE.md**: Complete demo day preparation
-- **README_Enhanced.md**: Enhanced features details
-- **PROJECT_OUTPUT_SUMMARY.md**: Test results and metrics
-- **DASHBOARD_DEMO_SUMMARY.md**: Dashboard features
-
-### Presentation (`presentation/`)
-
-#### PowerPoint Files
-- **Main**: Original presentation
-- **Updated**: With novelty analysis and literature comparison
-
-#### Markdown
-- **presentation.md**: Text version for editing
-
-## Quick Start Commands
-
-### Run Detection System
-```bash
-python run.py
-# OR
-python src/enhanced_main.py
-```
-
-### Run with Attack Test
-```bash
-# Terminal 1
-python src/enhanced_main.py
-
-# Terminal 2
-python tests/attack_simulator.py
-```
-
-### Run Dashboard
-```bash
-python src/dashboard.py
-# Open: http://localhost:8050
-```
-
-## File Sizes (Approximate)
+## Clean, Organized Project Structure
 
 ```
-Source Code:        ~50 KB
-Documentation:      ~500 KB
-Presentation:       ~2 MB
-Models:            ~100 KB
-Total:             ~3 MB
-```
-
-## Dependencies
-
-See `requirements.txt` for complete list:
-- boto3 (AWS SDK)
-- pandas (Data processing)
-- scikit-learn (ML models)
-- dash/plotly (Dashboard)
-
-## Generated Files
-
-### Logs (Auto-created)
-- `logs/threat_alerts.log` - Created on first alert
-- `logs/threat_alerts.json` - Created on first alert
-
-### Temporary Files
-- `__pycache__/` - Python bytecode (ignored)
-- `.vscode/` - IDE settings (ignored)
-
-## Important Notes
-
-1. **AWS Credentials**: Required for CloudWatch and CloudTrail access
-2. **Models**: Pre-trained ML models in `models/` directory
-3. **Logs**: Automatically created in `logs/` directory
-4. **Config**: Edit `config/alert_config.json` for email settings
-
-## For Demo Day
-
-**Essential Files:**
-- `src/enhanced_main.py` - Main system
-- `tests/attack_simulator.py` - Attack test
-- `docs/DEMO_DAY_GUIDE.md` - Demo script
-- `docs/STUDY_GUIDE_Quick_Reference.md` - Quick reference
-- `presentation/Hybrid_Threat_Detection_Presentation_Updated.pptx` - Slides
-
-**Quick Commands:**
-```bash
-# 1. Start system
-python run.py
-
-# 2. Launch attack
-python tests/attack_simulator.py
-
-# 3. View logs
-type logs\threat_alerts.log
+unified-threat-detection/
+│
+├── 📄 README.md                          # Main project documentation
+├── 📄 START_HERE.md                      # Getting started guide
+├── 📄 DOCUMENTATION_INDEX.md             # Navigation to all docs
+├── 📄 PROJECT_SUMMARY.md                 # Quick project overview
+├── 📄 AGENTIC_AI_EXPLAINED.md           # AI integration explanation
+├── 📄 OLLAMA_SETUP_GUIDE.md             # Ollama setup instructions
+├── 📄 CONTRIBUTING.md                    # Contribution guidelines
+├── 📄 LICENSE                            # MIT License
+├── 📄 requirements.txt                   # Python dependencies
+├── 📄 .gitignore                         # Git ignore rules
+│
+├── 📁 demo_materials/                    # Demo day materials
+│   ├── DEMO_DAY_QUICK_CARD_ENHANCED.md  # Quick reference card (PRINT THIS!)
+│   ├── DEMO_DAY_QUICK_CARD_ENHANCED.pdf
+│   ├── DEMO_DAY_DETAILED_EXPLANATIONS.md # Comprehensive demo guide
+│   └── DEMO_DAY_DETAILED_EXPLANATIONS.pdf
+│
+├── 📁 docs/                              # Complete documentation
+│   ├── AGENTIC_AI_INTEGRATION_GUIDE.md  # AI technical guide
+│   ├── CODE_DOCUMENTATION.md            # Code walkthrough
+│   ├── COMPLETE_PROJECT_GUIDE.md        # Full project guide
+│   ├── DATASET_AND_MODEL_GUIDE.md       # Dataset & model details
+│   ├── DEMO_COMMANDS.md                 # Full demo commands
+│   ├── DEMO_QA.md                       # 30 Q&A for demo
+│   └── *.pdf                            # PDF versions of all docs
+│
+├── 📁 src/                               # Source code
+│   ├── enhanced_main_with_agent.py      # Main system with AI
+│   ├── ids_engine.py                    # IDS engine
+│   ├── ueba_engine.py                   # UEBA engine
+│   ├── threat_fusion_engine.py          # 60/40 fusion algorithm
+│   ├── alert_system.py                  # Alert system
+│   ├── autonomous_response_agent.py     # Autonomous response
+│   ├── ollama_agent.py                  # Ollama AI agent
+│   ├── intelligent_agent.py             # OpenAI agent (alternative)
+│   ├── dashboard.py                     # Web dashboard
+│   └── agent_tools.py                   # Agent tools
+│
+├── 📁 tests/                             # Test files
+│   └── attack_simulator.py              # DDoS attack simulator
+│
+├── 📁 models/                            # ML models
+│   ├── ddos_model.pkl                   # IDS model
+│   └── uba_model.pkl                    # UEBA model
+│
+├── 📁 config/                            # Configuration
+│   ├── alert_config.json                # Alert configuration
+│   └── alert_config.json.template       # Template
+│
+├── 📁 logs/                              # Log files
+│   ├── autonomous_response.log          # Response logs
+│   ├── threat_alerts.json               # Alert logs
+│   └── decisions.db                     # AI decision database
+│
+├── 📁 presentation/                      # Presentations
+│   ├── *.pptx                           # PowerPoint files
+│   └── *.pdf                            # PDF versions
+│
+├── 📁 scripts/                           # Utility scripts
+│   ├── convert_all_md_to_pdf.py        # MD to PDF converter
+│   └── convert_pptx_to_pdf.py          # PPTX to PDF converter
+│
+├── 📁 archive/                           # Old/redundant files
+│   └── *.pdf                            # Archived documents
+│
+└── 📁 venv/                              # Python virtual environment
 ```
 
 ---
 
-**Clean, organized, and ready for demo! 🚀**
+## Essential Files for Demo Day
+
+### Must Print:
+1. **`demo_materials/DEMO_DAY_QUICK_CARD_ENHANCED.pdf`** (2 pages)
+   - Quick reference card
+   - Keep on desk during demo
+
+### Must Read Tonight:
+2. **`demo_materials/DEMO_DAY_DETAILED_EXPLANATIONS.pdf`** (15+ pages)
+   - Comprehensive explanations
+   - Q&A preparation
+   
+3. **`docs/DEMO_QA.pdf`** (30 pages)
+   - 30 common questions with answers
+
+### Backup References:
+4. **`docs/DEMO_COMMANDS.pdf`** (30 pages)
+   - Full demo walkthrough
+   
+5. **`AGENTIC_AI_EXPLAINED.pdf`**
+   - AI integration details
+
+---
+
+## File Categories
+
+### 📘 Documentation (Root)
+- **README.md** - Start here for project overview
+- **START_HERE.md** - Quick setup guide
+- **DOCUMENTATION_INDEX.md** - Find all documentation
+- **PROJECT_SUMMARY.md** - Executive summary
+- **AGENTIC_AI_EXPLAINED.md** - AI integration explained
+- **OLLAMA_SETUP_GUIDE.md** - Setup Ollama
+- **CONTRIBUTING.md** - How to contribute
+
+### 🎯 Demo Materials
+- **demo_materials/** - Everything for demo day
+  - Quick card (print this!)
+  - Detailed explanations (read this!)
+
+### 📚 Complete Documentation
+- **docs/** - All detailed documentation
+  - Technical guides
+  - Code documentation
+  - Q&A preparation
+  - Demo commands
+
+### 💻 Source Code
+- **src/** - All Python source code
+  - Main system
+  - Detection engines
+  - AI agents
+  - Alert system
+
+### 🧪 Testing
+- **tests/** - Test files
+  - Attack simulator for demo
+
+### 🤖 Models
+- **models/** - Trained ML models
+  - IDS model (DDoS detection)
+  - UEBA model (user behavior)
+
+### ⚙️ Configuration
+- **config/** - Configuration files
+  - Alert settings
+  - Email configuration
+
+### 📊 Logs
+- **logs/** - System logs
+  - Response logs
+  - Alert logs
+  - AI decisions
+
+### 🎤 Presentations
+- **presentation/** - All presentations
+  - PowerPoint files
+  - PDF versions
+
+### 🛠️ Scripts
+- **scripts/** - Utility scripts
+  - Conversion tools
+  - Helper scripts
+
+### 📦 Archive
+- **archive/** - Old/redundant files
+  - Kept for reference
+  - Not needed for demo
+
+---
+
+## Quick Navigation
+
+### For Demo Day:
+```
+demo_materials/DEMO_DAY_QUICK_CARD_ENHANCED.pdf
+demo_materials/DEMO_DAY_DETAILED_EXPLANATIONS.pdf
+docs/DEMO_QA.pdf
+```
+
+### To Run System:
+```
+python src/enhanced_main_with_agent.py
+python tests/attack_simulator.py
+```
+
+### To Read Documentation:
+```
+README.md
+docs/COMPLETE_PROJECT_GUIDE.pdf
+docs/CODE_DOCUMENTATION.pdf
+```
+
+### To Setup:
+```
+START_HERE.md
+OLLAMA_SETUP_GUIDE.md
+requirements.txt
+```
+
+---
+
+## File Counts
+
+- **Markdown files:** 9 (root) + 6 (docs) = 15 total
+- **PDF files:** ~30 total
+- **Python files:** 10 source files
+- **Presentations:** 8 files (4 PPTX + 4 PDF)
+- **Models:** 2 ML models
+- **Config:** 2 files
+- **Tests:** 1 attack simulator
+
+---
+
+## Clean and Organized!
+
+✅ All files properly categorized
+✅ Demo materials in dedicated folder
+✅ Documentation well organized
+✅ Source code in src/
+✅ Old files archived
+✅ Easy to navigate
+✅ Professional structure
+
+**Project is demo-ready! 🚀**

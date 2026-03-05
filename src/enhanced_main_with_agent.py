@@ -8,6 +8,16 @@ Author: Hybrid Threat Detection Team
 Date: 2026
 """
 
+import sys
+import os
+
+# Fix Windows console encoding for emoji/unicode characters
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except:
+        pass
+
 try:
     from src.ids_engine import IDSEngine
     from src.ueba_engine import UEBAEngine
@@ -121,9 +131,9 @@ class EnhancedThreatDetectionSystemWithAgent:
                 # Combine risks
                 final_risk, level = combine_risks(network_risk, user_risk)
                 
-                # Get network metrics for alert
-                network_bytes = self.ids.get_metric("NetworkIn")
-                network_packets = self.ids.get_metric("NetworkPacketsIn")
+                # Use network metrics already fetched by detect()
+                network_bytes = net.get("network_bytes", 0)
+                network_packets = net.get("network_packets", 0)
                 
                 # Display results
                 print(f"""
@@ -177,7 +187,7 @@ Network Traffic: {network_bytes:,.0f} bytes, {network_packets:,.0f} packets
             print(f"❌ Error in detection cycle: {e}")
     
     def show_statistics(self):
-        """Show system statistics including autonomous response metrics."""
+        """Show system statistics including autonomous response and AI accuracy metrics."""
         uptime = datetime.now() - self.stats["start_time"]
         alert_stats = self.alert_system.get_alert_statistics()
         
@@ -200,6 +210,23 @@ Network Traffic: {network_bytes:,.0f} bytes, {network_packets:,.0f} packets
             print(f"   - IPs Unblocked: {agent_stats['total_unblocks']}")
             print(f"   - Currently Blocked: {agent_stats['currently_blocked']}")
             print(f"   - Rate Limits Applied: {agent_stats['total_rate_limits']}")
+            
+            # Show AI learning metrics
+            if "ai_agent" in agent_stats:
+                ai = agent_stats["ai_agent"]
+                print(f"\n🧠 AGENTIC AI LEARNING METRICS")
+                print(f"   - Agent Type: {ai.get('agent_type', 'unknown')}")
+                print(f"   - Model: {ai.get('model', 'unknown')}")
+                print(f"   - Total Decisions in Memory: {ai.get('total_decisions', 0)}")
+                accuracy = ai.get("accuracy", {})
+                if accuracy.get("total_evaluated", 0) > 0:
+                    print(f"   - Accuracy: {accuracy.get('accuracy', 0):.1%}")
+                    print(f"   - Precision: {accuracy.get('precision', 0):.1%}")
+                    print(f"   - Recall: {accuracy.get('recall', 0):.1%}")
+                    print(f"   - F1 Score: {accuracy.get('f1_score', 0):.1%}")
+                thresholds = ai.get("adaptive_thresholds", {})
+                if thresholds.get("status") == "adjusted":
+                    print(f"   - Threshold Adjustment: {thresholds.get('reason', 'none')}")
         
         print(f"{'='*50}\n")
     
@@ -208,7 +235,7 @@ Network Traffic: {network_bytes:,.0f} bytes, {network_packets:,.0f} packets
         try:
             while True:
                 self.run_detection_cycle()
-                time.sleep(60)  # Wait 60 seconds between cycles as per requirements
+                time.sleep(15)  # Wait 15 seconds between cycles for faster detection
                 
         except KeyboardInterrupt:
             print("\n🛑 Stopping Hybrid Threat Detection System...")

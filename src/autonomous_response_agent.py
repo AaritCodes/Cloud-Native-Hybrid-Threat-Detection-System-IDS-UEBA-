@@ -18,13 +18,23 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from collections import defaultdict
 import json
+import os
 
-# Configure logging
+# Import Agentic AI Agent (ReAct-based with tool-calling and persistent memory)
+try:
+    from src.agentic_threat_agent import AgenticThreatAgent
+except ModuleNotFoundError:
+    from agentic_threat_agent import AgenticThreatAgent
+
+# Create logs directory if it doesn't exist
+os.makedirs('logs', exist_ok=True)
+
+# Configure logging with UTF-8 encoding for Windows
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('logs/autonomous_response.log'),
+        logging.FileHandler('logs/autonomous_response.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -59,7 +69,8 @@ class AutonomousResponseAgent:
         security_group_id: str,
         region: str = "ap-south-1",
         block_timeout_minutes: int = 10,
-        monitoring_interval: int = 60
+        monitoring_interval: int = 60,
+        enable_ai: bool = True
     ):
         """
         Initialize the Autonomous Response Agent.
@@ -69,18 +80,34 @@ class AutonomousResponseAgent:
             region: AWS region (default: ap-south-1)
             block_timeout_minutes: Minutes before auto-unblocking IP
             monitoring_interval: Seconds between monitoring cycles
+            enable_ai: Enable Ollama AI reasoning (default: True)
         """
         self.security_group_id = security_group_id
         self.region = region
         self.block_timeout_minutes = block_timeout_minutes
         self.monitoring_interval = monitoring_interval
+        self.enable_ai = enable_ai
+        
+        # Initialize Agentic AI (ReAct agent with tool-calling + persistent memory)
+        if enable_ai:
+            try:
+                self.ai_agent = AgenticThreatAgent()
+                logger.info("Agentic AI Agent initialized (ReAct + tool-calling + memory)")
+            except Exception as e:
+                logger.warning(f"Agentic AI initialization failed: {e}. Using rule-based decisions.")
+                self.ai_agent = None
+        else:
+            self.ai_agent = None
+        
+        # Track last decision ID for feedback loop
+        self.last_decision_id: Optional[int] = None
         
         # Initialize AWS clients (uses IAM role credentials)
         try:
             self.ec2_client = boto3.client('ec2', region_name=region)
-            logger.info(f"✅ AWS EC2 client initialized for region: {region}")
+            logger.info(f"AWS EC2 client initialized for region: {region}")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize AWS client: {e}")
+            logger.error(f"Failed to initialize AWS client: {e}")
             raise
         
         # In-memory tracking
@@ -97,10 +124,11 @@ class AutonomousResponseAgent:
             "start_time": datetime.now()
         }
         
-        logger.info("🚀 Autonomous Response Agent initialized")
-        logger.info(f"📊 Security Group: {security_group_id}")
-        logger.info(f"⏱️  Block timeout: {block_timeout_minutes} minutes")
-        logger.info(f"🔄 Monitoring interval: {monitoring_interval} seconds")
+        logger.info("Autonomous Response Agent initialized")
+        logger.info(f"Security Group: {security_group_id}")
+        logger.info(f"Block timeout: {block_timeout_minutes} minutes")
+        logger.info(f"Monitoring interval: {monitoring_interval} seconds")
+        logger.info(f"AI Reasoning: {'ENABLED' if self.ai_agent else 'DISABLED'}")
     
     def assess_threat_level(self, risk_score: float) -> str:
         """
@@ -409,6 +437,7 @@ class AutonomousResponseAgent:
     ) -> str:
         """
         Determine and execute appropriate response action based on risk score.
+        Uses AI reasoning if available, falls back to rule-based decisions.
         
         Args:
             ip_address: Source IP address
@@ -421,49 +450,119 @@ class AutonomousResponseAgent:
         """
         threat_level = self.assess_threat_level(risk_score)
         
-        if risk_score < 0.4:
-            # LOW: Log only
+        # Get AI recommendation if available
+        ai_action = None
+        ai_reasoning = None
+        ai_decision = None
+        
+        if self.ai_agent:
+            try:
+                print("Agentic AI analyzing threat (ReAct reasoning)...")
+                ai_decision = self.ai_agent.analyze_and_decide(
+                    network_risk=network_risk,
+                    user_risk=user_risk,
+                    ip_address=ip_address,
+                    context={
+                        'time': datetime.now().isoformat(),
+                        'threat_level': threat_level,
+                        'active_blocks': len(self.blocked_ips),
+                        'recent_attacks': self.stats['total_alerts'],
+                    }
+                )
+                ai_action = ai_decision.get('action')
+                ai_reasoning = ai_decision.get('reasoning')
+                tools_used = ai_decision.get('tools_used', [])
+                self.last_decision_id = ai_decision.get('decision_id')
+                
+                print(f"\nAI Reasoning: {ai_reasoning}")
+                print(f"AI Recommendation: {ai_action}")
+                if tools_used:
+                    print(f"Tools consulted: {', '.join(tools_used)}")
+                print()
+            except Exception as e:
+                logger.warning(f"Agentic AI analysis failed: {e}. Using rule-based decision.")
+        
+        # Determine action (use AI recommendation if available, otherwise use rules)
+        if ai_action:
+            action = ai_action
+        else:
+            # Fallback to rule-based decision
+            if risk_score < 0.4:
+                action = "LOG"
+            elif 0.4 <= risk_score < 0.6:
+                action = "ALERT"
+            elif 0.6 <= risk_score < 0.8:
+                action = "RATE_LIMIT"
+            else:
+                action = "BLOCK"
+        
+        # Execute the action
+        if action == "LOG":
             self.log_threat(ip_address, risk_score, network_risk, user_risk)
-            return "LOG"
             
-        elif 0.4 <= risk_score < 0.6:
-            # MEDIUM: Send alert
+        elif action == "ALERT":
             self.send_alert(ip_address, risk_score, network_risk, user_risk, threat_level)
-            return "ALERT"
             
-        elif 0.6 <= risk_score < 0.8:
-            # HIGH: Rate limiting
+        elif action == "RATE_LIMIT":
             self.simulate_rate_limiting(ip_address, risk_score)
             self.send_alert(ip_address, risk_score, network_risk, user_risk, threat_level)
-            return "RATE_LIMIT"
             
-        else:
-            # CRITICAL: Block IP
+        elif action == "BLOCK":
             success = self.block_ip_address(ip_address, risk_score, network_risk, user_risk)
             if success:
                 self.send_alert(ip_address, risk_score, network_risk, user_risk, threat_level)
-                return "BLOCK"
             else:
                 return "BLOCK_FAILED"
+        
+        return action
     
+    def record_outcome(self, outcome: str, notes: str = "") -> Dict:
+        """
+        Record the outcome of the last decision — closes the feedback loop.
+        
+        This is how the agent learns: after a human or automated check
+        confirms whether the last action was correct, call this method.
+        
+        Args:
+            outcome: 'true_positive', 'false_positive', 'missed_attack', 'benign'
+            notes: Optional explanation
+            
+        Returns:
+            Updated accuracy statistics
+        """
+        if self.ai_agent and self.last_decision_id:
+            stats = self.ai_agent.record_outcome(self.last_decision_id, outcome, notes)
+            logger.info(f"Feedback recorded: {outcome} for decision #{self.last_decision_id}")
+            return stats
+        else:
+            logger.warning("No decision to record outcome for (no AI agent or no last decision)")
+            return {"error": "No decision to record outcome for"}
+
     def get_statistics(self) -> Dict:
         """
-        Get agent statistics.
+        Get agent statistics including AI accuracy metrics.
         
         Returns:
-            Dictionary containing operational statistics
+            Dictionary containing operational and AI statistics
         """
         uptime = datetime.now() - self.stats["start_time"]
         
-        return {
+        stats = {
             "uptime_seconds": uptime.total_seconds(),
             "total_blocks": self.stats["total_blocks"],
             "total_unblocks": self.stats["total_unblocks"],
             "total_alerts": self.stats["total_alerts"],
             "total_rate_limits": self.stats["total_rate_limits"],
             "currently_blocked": len(self.blocked_ips),
-            "blocked_ips": list(self.blocked_ips.keys())
+            "blocked_ips": list(self.blocked_ips.keys()),
         }
+        
+        # Add AI agent stats if available
+        if self.ai_agent:
+            ai_stats = self.ai_agent.get_statistics()
+            stats["ai_agent"] = ai_stats
+        
+        return stats
     
     def display_statistics(self) -> None:
         """Display agent statistics in formatted output."""
@@ -481,6 +580,19 @@ class AutonomousResponseAgent:
         print(f"🔒 Currently Blocked: {stats['currently_blocked']} IPs")
         if stats['blocked_ips']:
             print(f"📋 Blocked IPs: {', '.join(stats['blocked_ips'])}")
+        
+        # Display AI accuracy if available
+        if "ai_agent" in stats and stats["ai_agent"].get("accuracy"):
+            ai = stats["ai_agent"]
+            accuracy = ai["accuracy"]
+            print(f"\n🤖 AGENTIC AI METRICS")
+            print(f"   Total Decisions: {ai.get('total_decisions', 0)}")
+            if accuracy.get("total_evaluated", 0) > 0:
+                print(f"   Accuracy: {accuracy.get('accuracy', 0):.1%}")
+                print(f"   Precision: {accuracy.get('precision', 0):.1%}")
+                print(f"   Recall: {accuracy.get('recall', 0):.1%}")
+                print(f"   F1 Score: {accuracy.get('f1_score', 0):.1%}")
+        
         print(f"{'='*70}\n")
     
     def run_monitoring_cycle(

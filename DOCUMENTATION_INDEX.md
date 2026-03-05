@@ -1,374 +1,468 @@
-# 📚 Autonomous Response Agent - Complete Documentation Index
+# Documentation Index
+## Complete Guide to Project Documentation
 
-**Status**: ✅ Production Ready | **Version**: 2.0 | **Date**: February 28, 2026
-
----
-
-## 🎯 Quick Navigation
-
-### 🚀 I WANT TO START NOW (5 minutes)
-👉 **Start here**: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md)
-
-Get the agent running in 5 minutes with step-by-step instructions.
-
-### 📖 I WANT TO UNDERSTAND THE SYSTEM
-👉 **Start here**: [AGENT_QUICK_REFERENCE.md](AGENT_QUICK_REFERENCE.md)
-
-Quick reference guide with architecture overview, commands, and scenarios.
-
-### 🔧 I'M DEPLOYING THIS TO PRODUCTION
-👉 **Start here**: [AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md](AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md)
-
-Comprehensive deployment guide with AWS setup, configuration, and troubleshooting.
-
-### 🛠️ I NEED TO OPERATE/MAINTAIN THIS
-👉 **Start here**: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md)
-
-Daily procedures, incident response, maintenance tasks, and escalation workflows.
-
-### 🏗️ I NEED TO UNDERSTAND THE ARCHITECTURE
-👉 **Start here**: [ARCHITECTURE_AND_VISUAL_REFERENCE.md](ARCHITECTURE_AND_VISUAL_REFERENCE.md)
-
-System diagrams, data flows, decision matrices, and integration points.
-
-### 📋 I WANT TECHNICAL DETAILS
-👉 **Start here**: [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)
-
-Technical specifications, performance metrics, and requirements fulfillment.
-
-### ✅ I WANT TO SEE WHAT'S BEEN DELIVERED
-👉 **Start here**: [DELIVERY_COMPLETION_SUMMARY.md](DELIVERY_COMPLETION_SUMMARY.md)
-
-Complete summary of delivered components, features, and quality assurance.
+**Last Updated:** February 28, 2026
 
 ---
 
-## 📁 All Documentation Files
+## Start Here
 
-### Getting Started (Fastest Path)
-| Document | Purpose | Time | Best For |
-|----------|---------|------|----------|
-| [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) | Get running in 5 minutes | 5 min | New users |
-| [AGENT_QUICK_REFERENCE.md](AGENT_QUICK_REFERENCE.md) | Quick reference & common tasks | 10 min | Daily operations |
+### New to the Project?
+1. Read **README.md** - Project overview and quick start
+2. Read **PROJECT_SUMMARY.md** - Quick reference guide
+3. Read **docs/COMPLETE_PROJECT_GUIDE.md** - Full project explanation
 
-### Deployment & Setup
-| Document | Purpose | Time | Best For |
-|----------|---------|------|----------|
-| [AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md](AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md) | Full setup guide | 30 min | Deployment engineers |
-| [ARCHITECTURE_AND_VISUAL_REFERENCE.md](ARCHITECTURE_AND_VISUAL_REFERENCE.md) | System architecture & diagrams | 20 min | Architects |
+### Preparing for Demo Day?
+1. Read **docs/DEMO_COMMANDS.md** - Step-by-step demo guide
+2. Read **docs/DEMO_QA.md** - 30 Q&A with detailed answers
+3. Practice running the demo
 
-### Operations & Maintenance
-| Document | Purpose | Time | Best For |
-|----------|---------|------|----------|
-| [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md) | Daily ops & incident response | Reference | Operations team |
-| [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) | Technical specifications | 20 min | Developers |
-
-### Project Overview
-| Document | Purpose | Time | Best For |
-|----------|---------|------|----------|
-| [DELIVERY_COMPLETION_SUMMARY.md](DELIVERY_COMPLETION_SUMMARY.md) | What was delivered | 15 min | Everyone |
+### Want to Understand the Code?
+1. Read **docs/CODE_DOCUMENTATION.md** - Detailed code walkthrough
+2. Read **docs/DATASET_AND_MODEL_GUIDE.md** - Dataset and ML choices
+3. Explore source code in **src/** directory
 
 ---
 
-## 📊 Content at a Glance
+## Documentation Structure
 
-### QUICK_START_5_MINUTES.md (5 min read)
-```
-✅ Step 1: Get Security Group ID (30 seconds)
-✅ Step 2: Update Configuration (1 minute)  
-✅ Step 3: Verify AWS Credentials (1 minute)
-✅ Step 4: Start System (30 seconds)
-✅ Step 5: Monitor (1-2 minutes)
-✅ Troubleshooting Guide
-```
+### Root Level Documents
 
-### AGENT_QUICK_REFERENCE.md (Quick Reference)
-```
-✅ Quick Start (60 seconds)
-✅ What It Does (Response Matrix)
-✅ Common Commands
-✅ Real-World Scenarios
-✅ Best Practices
-✅ Support Resources
-```
+#### README.md
+**Purpose:** Main project documentation  
+**Contents:**
+- Project overview
+- Key features
+- System architecture
+- Quick start guide
+- Installation instructions
+- Performance metrics
+- AWS configuration
 
-### AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md (30 min read)
-```
-✅ System Architecture Overview
-✅ Risk-Based Response Levels
-✅ Prerequisites (AWS, Python)
-✅ Step-by-Step Setup
-✅ Core Components Explained
-✅ Configuration Options
-✅ Production Deployment Checklist
-✅ Troubleshooting Guide
-✅ Advanced Usage Examples
-```
-
-### OPERATIONS_RUNBOOK.md (Reference)
-```
-✅ Emergency Procedures
-✅ Daily Operations Checklist
-✅ Common Operations (block/unblock)
-✅ Monitoring Dashboard Metrics
-✅ Tuning & Optimization
-✅ Incident Response Procedures
-✅ Maintenance Tasks (Weekly/Monthly)
-✅ Escalation Procedures
-✅ Recovery Procedures
-✅ Troubleshooting Matrix
-```
-
-### ARCHITECTURE_AND_VISUAL_REFERENCE.md (20 min read)
-```
-✅ Complete System Flow Diagram
-✅ Risk Score Scale Visual
-✅ Data Flow Diagram
-✅ Action Decision Matrix
-✅ Attack Timeline Examples
-✅ Integration Points
-✅ Configuration Reference
-```
-
-### IMPLEMENTATION_SUMMARY.md (20 min read)
-```
-✅ Executive Summary
-✅ System Architecture
-✅ Key Features Explained
-✅ Usage Examples
-✅ Files Created/Modified
-✅ Technical Specifications
-✅ Performance Baselines
-✅ Real-World Scenarios
-✅ Troubleshooting Guide
-✅ Version History
-```
-
-### DELIVERY_COMPLETION_SUMMARY.md (15 min read)
-```
-✅ What Was Delivered
-✅ Core Implementation Details
-✅ Requirements Fulfillment Matrix
-✅ Files Created/Modified
-✅ System Metrics
-✅ Getting Started Steps
-✅ Documentation Guide
-✅ Quick Links to Resources
-```
+**When to Read:** First document to read for project overview
 
 ---
 
-## 🎓 Learning Paths
+#### PROJECT_SUMMARY.md
+**Purpose:** Quick reference and navigation guide  
+**Contents:**
+- File organization
+- Quick start for different use cases
+- Key numbers to remember
+- Documentation map
+- Common questions
+- Demo day checklist
 
-### Path 1: "I Just Want to Run It" (15 minutes)
-1. Read: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) (5 min)
-2. Execute: Follow 5 steps (5 min)
-3. Verify: Check logs (5 min)
-✅ **Done!** System is running
-
-### Path 2: "I Need to Deploy This" (1-2 hours)
-1. Read: [AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md](AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md) (30 min)
-2. Read: [ARCHITECTURE_AND_VISUAL_REFERENCE.md](ARCHITECTURE_AND_VISUAL_REFERENCE.md) (20 min)
-3. Execute: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) (5 min)
-4. Test: Run `test_autonomous_agent.py` (10 min)
-5. Configure: Adjust thresholds (10 min)
-6. Verify: Run production checklist (10 min)
-✅ **Done!** System is production-ready
-
-### Path 3: "I Need to Operate This" (30 minutes)
-1. Read: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) (5 min)
-2. Read: [AGENT_QUICK_REFERENCE.md](AGENT_QUICK_REFERENCE.md) (10 min)
-3. Bookmark: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md) (reference)
-4. Execute: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) (5 min)
-5. Test: Run test scenarios (10 min)
-✅ **Done!** Ready for operations
-
-### Path 4: "I'm a Developer/Architect" (2 hours)
-1. Read: [DELIVERY_COMPLETION_SUMMARY.md](DELIVERY_COMPLETION_SUMMARY.md) (15 min)
-2. Read: [ARCHITECTURE_AND_VISUAL_REFERENCE.md](ARCHITECTURE_AND_VISUAL_REFERENCE.md) (20 min)
-3. Read: [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) (20 min)
-4. Read Code: `src/autonomous_response_agent.py` (30 min)
-5. Read Code: `src/enhanced_main_with_agent.py` (15 min)
-6. Review: `test_autonomous_agent.py` (20 min)
-✅ **Done!** Full system understanding
+**When to Read:** Need quick reference or don't know where to start
 
 ---
 
-## 🔍 Find What You Need
+#### DOCUMENTATION_INDEX.md (This File)
+**Purpose:** Navigate all documentation  
+**Contents:**
+- Complete documentation structure
+- What each document contains
+- When to read each document
+- Quick links
 
-### Quick Reference by Topic
-
-**AWS & Credentials**
-- Getting credentials: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md#step-3-verify-aws-credentials)
-- IAM setup: [AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md](AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md#aws-configuration)
-- Troubleshooting: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md#trouble-shooting-guide)
-
-**Performance & Metrics**
-- System metrics: [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md#-system-metrics)
-- Performance baselines: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md#performance-baselines)
-- Statistics: [AGENT_QUICK_REFERENCE.md](AGENT_QUICK_REFERENCE.md#statistics--monitoring)
-
-**Incident Response**
-- Incident procedures: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md#incident-response)
-- When IP is blocked: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md#when-an-ip-is-blocked)
-- False positives: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md#false-positive-detected)
-
-**Configuration**
-- Basic setup: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md#step-2-update-configuration)
-- Advanced config: [AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md](AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md#configuration-options)
-- Tuning: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md#tuning--optimization)
-
-**Troubleshooting**
-- First steps: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md#troubleshooting-30-seconds)
-- Full guide: [AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md](AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md#troubleshooting)
-- Matrix: [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md#troubleshooting-guide)
+**When to Read:** Need to find specific information
 
 ---
 
-## 📞 Support Quick Links
+### Core Documentation (docs/)
 
-### Common Issues & Solutions
+#### docs/COMPLETE_PROJECT_GUIDE.md
+**Purpose:** Comprehensive project explanation  
+**Contents:**
+1. Project Overview
+2. Problem Statement
+3. Literature Survey
+4. Proposed Solution
+5. System Architecture
+6. Novel Contribution (60/40 fusion)
+7. Implementation Details
+8. Testing and Validation
+9. Results and Performance
+10. Future Enhancements
 
-| Issue | Solution |
-|-------|----------|
-| Can't start system | See [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md#troubleshooting-30-seconds) |
-| AWS errors | See [AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md](AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md#troubleshooting) |
-| High false positives | See [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md#high-false-positive-rate) |
-| Operating the system | See [AGENT_QUICK_REFERENCE.md](AGENT_QUICK_REFERENCE.md#common-commands) |
-| Understanding flow | See [ARCHITECTURE_AND_VISUAL_REFERENCE.md](ARCHITECTURE_AND_VISUAL_REFERENCE.md) |
+**Length:** ~50 pages  
+**Reading Time:** 30-45 minutes  
+**When to Read:** 
+- Understanding the entire project
+- Preparing presentation
+- Writing project report
+- Answering "why" questions
 
----
-
-## 🎯 Common Workflows
-
-### Starting for First Time
-```
-1. Read: QUICK_START_5_MINUTES.md (5 min)
-2. Execute: 5-step setup (5 min)
-3. Verify: Check logs (5 min)
-4. Read: AGENT_QUICK_REFERENCE.md (10 min)
-5. Test: Real-world scenarios (10 min)
-```
-
-### Daily Operations
-```
-1. Start system: python run.py
-2. Monitor: tail -f logs/autonomous_response.log
-3. Check stats: View OPERATIONS_RUNBOOK.md
-4. Respond to incidents: Follow OPERATIONS_RUNBOOK.md procedures
-5. End of day: Archive logs
-```
-
-### Responding to Incident
-```
-1. Alert arrives
-2. Check: OPERATIONS_RUNBOOK.md → Incident Response section
-3. Investigate: View logs
-4. Decide: Extend block, release, or investigate
-5. Take action: Manual AWS commands if needed
-6. Document: Log incident details
-```
-
-### Deploying to New Environment
-```
-1. Read: AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md (30 min)
-2. Prepare: Get Security Group ID, verify credentials
-3. Configure: Update src/enhanced_main_with_agent.py
-4. Test: Run test_autonomous_agent.py
-5. Deploy: Start python run.py
-6. Verify: All systems operational
-```
+**Key Sections:**
+- Section 6: Novel 60/40 fusion algorithm (most important)
+- Section 9: Results and performance metrics
+- Section 3: Literature survey and research gap
 
 ---
 
-## 📚 Documentation Statistics
+#### docs/DATASET_AND_MODEL_GUIDE.md
+**Purpose:** Explain dataset and ML model choices  
+**Contents:**
+1. Dataset Overview
+2. IDS Dataset (Network Metrics)
+3. UEBA Dataset (User Behavior)
+4. Why Isolation Forest?
+5. Model Training Process
+6. Parameter Selection
+7. Alternative Models Considered
+8. Model Evaluation
 
-```
-Total Documentation: 20,000+ words across 8 files
-├─ Getting Started Guides: 7,000+ words
-├─ Deployment Guides: 6,500+ words
-├─ Operations Guides: 5,000+ words
-└─ Technical Reference: 3,500+ words
+**Length:** ~35 pages  
+**Reading Time:** 25-35 minutes  
+**When to Read:**
+- Questions about dataset
+- Questions about ML algorithm
+- Questions about model training
+- Questions about parameter selection
 
-Code Delivery: 907 lines across 2 production files
-├─ Autonomous Response Agent: 645 lines
-├─ System Integration: 262 lines
-└─ Test Suite: 400+ lines
-
-Total Deliverables: 15+ files
-├─ Documentation: 8 markdown files
-├─ Code: 3 Python files
-├─ Configuration: 2 files
-└─ Tests: 1 test suite
-```
-
----
-
-## ✅ Quality Metrics
-
-```
-✅ All Requirements Met: 100%
-✅ Code Quality: Production-Grade
-✅ Documentation: Comprehensive
-✅ Testing: Complete (7 test categories)
-✅ Security: IAM role-based, no hardcoded secrets
-✅ Performance: <3 seconds end-to-end
-✅ Reliability: Graceful error handling
-✅ Usability: 5-minute quick start
-```
+**Key Sections:**
+- Section 4: Why Isolation Forest (most asked)
+- Section 6: Parameter selection rationale
+- Section 7: Why not other algorithms
 
 ---
 
-## 🚀 Next Steps
+#### docs/CODE_DOCUMENTATION.md
+**Purpose:** Detailed code walkthrough  
+**Contents:**
+1. Project Structure
+2. IDS Engine (ids_engine.py)
+3. UEBA Engine (ueba_engine.py)
+4. Threat Fusion Engine (threat_fusion_engine.py)
+5. Autonomous Response Agent (autonomous_response_agent.py)
+6. Alert System (alert_system.py)
+7. Main System (enhanced_main_with_agent.py)
+8. Attack Simulator (tests/attack_simulator.py)
 
-1. **Choose your path above** (select based on your role)
-2. **Start with the recommended document** (green arrow 👉)
-3. **Follow the steps** provided
-4. **Reference other docs as needed** via links
+**Length:** ~40 pages  
+**Reading Time:** 30-40 minutes  
+**When to Read:**
+- Understanding how code works
+- Modifying or extending code
+- Debugging issues
+- Code review
 
-**Expected time to production**: 1-2 hours
-
----
-
-## 📖 File Checklist
-
-**Documentation Files** (All Included ✅)
-- [ ] [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) - 5-minute quick start
-- [ ] [AGENT_QUICK_REFERENCE.md](AGENT_QUICK_REFERENCE.md) - Quick reference guide
-- [ ] [AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md](AUTONOMOUS_AGENT_DEPLOYMENT_GUIDE.md) - Deployment guide
-- [ ] [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md) - Operations procedures
-- [ ] [ARCHITECTURE_AND_VISUAL_REFERENCE.md](ARCHITECTURE_AND_VISUAL_REFERENCE.md) - Architecture diagrams
-- [ ] [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Technical details
-- [ ] [DELIVERY_COMPLETION_SUMMARY.md](DELIVERY_COMPLETION_SUMMARY.md) - What was delivered
-- [ ] [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) - This file
-
-**Code Files** (All Included ✅)
-- [ ] `src/autonomous_response_agent.py` - Main agent (645 lines)
-- [ ] `src/enhanced_main_with_agent.py` - Integration (262 lines)
-- [ ] `test_autonomous_agent.py` - Test suite (400+ lines)
-
-**Configuration** (Update Required ⚠️)
-- [ ] `src/enhanced_main_with_agent.py` line ~235
-  - Set: `SECURITY_GROUP_ID = "sg-YOUR_ID_HERE"`
+**Key Sections:**
+- Section 4: Threat Fusion (60/40 algorithm implementation)
+- Section 5: Autonomous Response Agent (decision logic)
+- Complete Detection Flow diagram
 
 ---
 
-## 🎉 Ready to Get Started?
+#### docs/DEMO_COMMANDS.md
+**Purpose:** Step-by-step demo execution guide  
+**Contents:**
+- Pre-demo checklist
+- Demo workflow timeline
+- Step-by-step commands
+- Expected output for each step
+- What to say during demo
+- Troubleshooting
+- Key talking points
 
-👉 **Start Here** → [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md)
+**Length:** ~20 pages  
+**Reading Time:** 15-20 minutes  
+**When to Read:**
+- Before demo day
+- During demo practice
+- As reference during demo
 
-**Time to operational system: 5 minutes** ✨
+**Key Sections:**
+- Demo Workflow (3-4 minute timeline)
+- Step 5: Explain Agent Decision
+- Key Talking Points
 
 ---
 
-**Questions?** Each guide has a troubleshooting section.  
-**Need help?** See the relevant guide linked above.  
-**Want examples?** Check ARCHITECTURE_AND_VISUAL_REFERENCE.md for diagrams.  
+#### docs/DEMO_QA.md
+**Purpose:** Demo day Q&A preparation  
+**Contents:**
+30 questions with detailed answers covering:
+1. Project Overview (Q1-Q3)
+2. Dataset (Q4-Q7)
+3. Model and Algorithm (Q8-Q11)
+4. 60/40 Fusion (Q12-Q14)
+5. Implementation (Q15-Q17)
+6. Performance (Q18-Q20)
+7. AWS Integration (Q21-Q23)
+8. Autonomous Response (Q24-Q26)
+9. Testing and Validation (Q27-Q28)
+10. Future Work (Q29-Q30)
 
-**Status: ✅ READY FOR PRODUCTION DEPLOYMENT** 🚀
+**Length:** ~30 pages  
+**Reading Time:** 25-35 minutes  
+**When to Read:**
+- Preparing for demo day
+- Before presentation
+- Practicing Q&A
+- As reference during Q&A
+
+**Key Questions:**
+- Q12: Why 60/40 weighting?
+- Q8: Which ML algorithm and why?
+- Q18: Performance metrics
+- Q4: What dataset did you use?
 
 ---
 
-*Last Updated: February 28, 2026*  
-*Version: 2.0*  
-*Status: Complete & Production-Ready*
+### Source Code Documentation
+
+#### src/ids_engine.py
+**Lines:** ~150  
+**Purpose:** Network anomaly detection  
+**Key Methods:**
+- `get_metric()` - Fetch CloudWatch metrics
+- `detect()` - Run anomaly detection
+
+**Documentation:** See docs/CODE_DOCUMENTATION.md Section 2
+
+---
+
+#### src/ueba_engine.py
+**Lines:** ~200  
+**Purpose:** User behavior analytics  
+**Key Methods:**
+- `fetch_cloudtrail_logs()` - Get CloudTrail logs
+- `extract_features()` - Extract behavioral features
+- `detect()` - Run anomaly detection
+
+**Documentation:** See docs/CODE_DOCUMENTATION.md Section 3
+
+---
+
+#### src/threat_fusion_engine.py
+**Lines:** ~50  
+**Purpose:** 60/40 weighted risk correlation  
+**Key Function:**
+- `combine_risks()` - Apply 60/40 fusion
+
+**Documentation:** See docs/CODE_DOCUMENTATION.md Section 4
+
+---
+
+#### src/autonomous_response_agent.py
+**Lines:** ~500  
+**Purpose:** Automated threat response  
+**Key Methods:**
+- `take_action()` - Decide and execute response
+- `block_ip_address()` - Block via Security Group
+- `check_and_unblock_expired()` - Auto-unblock
+
+**Documentation:** See docs/CODE_DOCUMENTATION.md Section 5
+
+---
+
+#### src/alert_system.py
+**Lines:** ~200  
+**Purpose:** Multi-channel alerting  
+**Key Methods:**
+- `create_alert()` - Create and send alerts
+- `send_email_alert()` - Email notifications
+
+**Documentation:** See docs/CODE_DOCUMENTATION.md Section 6
+
+---
+
+#### src/enhanced_main_with_agent.py
+**Lines:** ~300  
+**Purpose:** Main system integration  
+**Key Methods:**
+- `run_detection_cycle()` - Complete detection cycle
+- `run()` - Main loop
+
+**Documentation:** See docs/CODE_DOCUMENTATION.md Section 7
+
+---
+
+### Configuration Files
+
+#### config/alert_config.json
+**Purpose:** Email and alert settings  
+**Format:** JSON  
+**Contents:**
+- SMTP server settings
+- Email credentials
+- Alert recipients
+
+**Template:** config/alert_config.json.template
+
+---
+
+#### requirements.txt
+**Purpose:** Python dependencies  
+**Contents:**
+- boto3 (AWS SDK)
+- scikit-learn (ML)
+- pandas (data processing)
+- numpy (numerical)
+- requests (HTTP)
+
+**Install:** `pip install -r requirements.txt`
+
+---
+
+### Presentation Materials
+
+#### presentation/AICS_Project_Review_Presentation.pptx
+**Purpose:** AICS project review presentation  
+**Slides:** 10  
+**Contents:**
+- Title slide
+- Problem statement
+- Literature survey
+- Objectives
+- Proposed methodology (2 slides)
+- Dataset description (2 slides)
+- References
+
+---
+
+#### AWS_Hybrid_Threat_Detection.pdf
+**Purpose:** Project documentation PDF  
+**Pages:** 17  
+**Contents:** Complete project documentation
+
+---
+
+#### presentation_final.pdf
+**Purpose:** Final presentation PDF  
+**Pages:** 17  
+**Contents:** Presentation slides
+
+---
+
+## Quick Navigation
+
+### "I need to..."
+
+**...understand the project quickly**
+→ README.md → PROJECT_SUMMARY.md
+
+**...prepare for demo day**
+→ docs/DEMO_COMMANDS.md → docs/DEMO_QA.md
+
+**...understand the 60/40 fusion**
+→ docs/COMPLETE_PROJECT_GUIDE.md (Section 6)
+→ docs/DEMO_QA.md (Q12-Q14)
+
+**...understand the dataset**
+→ docs/DATASET_AND_MODEL_GUIDE.md (Sections 2-3)
+
+**...understand why Isolation Forest**
+→ docs/DATASET_AND_MODEL_GUIDE.md (Section 4)
+
+**...understand the code**
+→ docs/CODE_DOCUMENTATION.md
+
+**...answer questions about performance**
+→ docs/DEMO_QA.md (Q18-Q20)
+→ docs/COMPLETE_PROJECT_GUIDE.md (Section 9)
+
+**...run the demo**
+→ docs/DEMO_COMMANDS.md
+
+**...modify the code**
+→ docs/CODE_DOCUMENTATION.md
+→ Source files in src/
+
+---
+
+## Reading Order Recommendations
+
+### For Demo Day Preparation (2-3 hours)
+1. PROJECT_SUMMARY.md (15 min)
+2. docs/DEMO_COMMANDS.md (20 min)
+3. docs/DEMO_QA.md (30 min)
+4. Practice demo (60 min)
+5. Review key sections (30 min)
+
+### For Complete Understanding (4-5 hours)
+1. README.md (20 min)
+2. docs/COMPLETE_PROJECT_GUIDE.md (45 min)
+3. docs/DATASET_AND_MODEL_GUIDE.md (35 min)
+4. docs/CODE_DOCUMENTATION.md (40 min)
+5. docs/DEMO_QA.md (30 min)
+6. Source code review (90 min)
+
+### For Quick Reference (30 minutes)
+1. PROJECT_SUMMARY.md (15 min)
+2. docs/DEMO_QA.md - Quick Answer Cheat Sheet (5 min)
+3. Key sections from COMPLETE_PROJECT_GUIDE.md (10 min)
+
+---
+
+## Document Statistics
+
+| Document | Pages | Words | Reading Time |
+|----------|-------|-------|--------------|
+| README.md | 12 | 3,500 | 20 min |
+| PROJECT_SUMMARY.md | 10 | 2,800 | 15 min |
+| COMPLETE_PROJECT_GUIDE.md | 50 | 12,000 | 45 min |
+| DATASET_AND_MODEL_GUIDE.md | 35 | 9,000 | 35 min |
+| CODE_DOCUMENTATION.md | 40 | 10,000 | 40 min |
+| DEMO_COMMANDS.md | 20 | 5,000 | 20 min |
+| DEMO_QA.md | 30 | 8,000 | 30 min |
+| **Total** | **197** | **50,300** | **3.5 hours** |
+
+---
+
+## Key Concepts Index
+
+### 60/40 Fusion Algorithm
+- docs/COMPLETE_PROJECT_GUIDE.md - Section 6
+- docs/DEMO_QA.md - Q12-Q14
+- docs/CODE_DOCUMENTATION.md - Section 4
+
+### Isolation Forest
+- docs/DATASET_AND_MODEL_GUIDE.md - Section 4
+- docs/DEMO_QA.md - Q8-Q11
+
+### Autonomous Response
+- docs/COMPLETE_PROJECT_GUIDE.md - Section 4
+- docs/CODE_DOCUMENTATION.md - Section 5
+- docs/DEMO_QA.md - Q24-Q26
+
+### Performance Metrics
+- docs/COMPLETE_PROJECT_GUIDE.md - Section 9
+- docs/DEMO_QA.md - Q18-Q20
+- README.md - Key Results section
+
+### AWS Integration
+- docs/COMPLETE_PROJECT_GUIDE.md - Section 7
+- docs/DEMO_QA.md - Q21-Q23
+- README.md - AWS Configuration section
+
+---
+
+## Version History
+
+**v1.0 - February 28, 2026**
+- Initial comprehensive documentation
+- All core documents created
+- Demo day ready
+
+---
+
+## Need Help?
+
+**Can't find what you're looking for?**
+1. Check PROJECT_SUMMARY.md - Documentation Map section
+2. Use Ctrl+F to search within documents
+3. Check the Quick Navigation section above
+
+**Still stuck?**
+- Review README.md for project overview
+- Check docs/DEMO_QA.md for common questions
+- Refer to source code comments
+
+---
+
+**Author:** Aarit Haldar  
+**Date:** February 28, 2026  
+**Institution:** Engineering College  
+**USN:** ENG24CY0073

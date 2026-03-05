@@ -17,9 +17,10 @@ build/
 credentials
 config/alert_config.json
 
-# Logs (Don't commit logs)
+# Logs and Database (Don't commit logs or decision database)
 logs/
 *.log
+*.db
 
 # IDE
 .vscode/

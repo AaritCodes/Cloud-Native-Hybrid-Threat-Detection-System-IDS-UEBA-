@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from dataclasses import dataclass
 from typing import List, Dict
 import logging
@@ -10,6 +10,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 EMAIL_AVAILABLE = True
+
+# Create logs directory if it doesn't exist
+os.makedirs('logs', exist_ok=True)
 
 @dataclass
 class Alert:
@@ -78,7 +81,7 @@ class AlertSystem:
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(message)s',
             handlers=[
-                logging.FileHandler('threat_alerts.log'),
+                logging.FileHandler('logs/threat_alerts.log', encoding='utf-8'),
                 logging.StreamHandler()
             ]
         )
@@ -273,7 +276,7 @@ class AlertSystem:
     def check_rate_limit(self) -> bool:
         """Check if we can send another email (rate limiting)"""
         now = datetime.now()
-        hour_ago = now.replace(minute=0, second=0, microsecond=0)
+        hour_ago = now - timedelta(hours=1)
         
         # Count emails sent in the last hour
         recent_emails = [a for a in self.alert_history 
@@ -298,7 +301,7 @@ class AlertSystem:
             }
             
             # Append to alerts file
-            alerts_file = "threat_alerts.json"
+            alerts_file = "logs/threat_alerts.json"
             alerts = []
             
             if os.path.exists(alerts_file):
@@ -335,7 +338,7 @@ class AlertSystem:
     
     def get_recent_alerts(self, hours: int = 24) -> List[Alert]:
         """Get alerts from the last N hours"""
-        cutoff = datetime.now().replace(hour=datetime.now().hour - hours)
+        cutoff = datetime.now() - timedelta(hours=hours)
         return [a for a in self.alert_history if a.timestamp >= cutoff]
 
 # Example usage and testing

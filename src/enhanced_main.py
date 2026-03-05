@@ -71,9 +71,9 @@ class EnhancedThreatDetectionSystem:
                 # Combine risks
                 final_risk, level = combine_risks(network_risk, user_risk)
                 
-                # Get network metrics for alert
-                network_bytes = self.ids.get_metric("NetworkIn")
-                network_packets = self.ids.get_metric("NetworkPacketsIn")
+                # Use network metrics already fetched by detect()
+                network_bytes = net.get("network_bytes", 0)
+                network_packets = net.get("network_packets", 0)
                 
                 # Display results
                 print(f"""

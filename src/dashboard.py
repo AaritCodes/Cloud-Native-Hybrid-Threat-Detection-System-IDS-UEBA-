@@ -13,8 +13,8 @@ from collections import deque
 # Email imports with fallback
 try:
     import smtplib
-    from email.mime.text import MimeText
-    from email.mime.multipart import MimeMultipart
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
     EMAIL_AVAILABLE = True
 except ImportError:
     EMAIL_AVAILABLE = False
