@@ -80,25 +80,10 @@ class OllamaAgent:
         # Calculate combined risk using 60/40 fusion
         final_risk = 0.6 * network_risk + 0.4 * user_risk
         
-        # Build simplified prompt
-        prompt = f"""You are a cybersecurity AI. Analyze this threat:
-
-Network Risk: {network_risk:.2f} (0=safe, 1=critical)
-User Risk: {user_risk:.2f} (0=safe, 1=critical)
-Combined Risk (60/40): {final_risk:.2f}
-IP: {ip_address}
-
-Rules:
-- Risk < 0.4 → LOG (just record)
-- Risk 0.4-0.6 → ALERT (notify team)
-- Risk 0.6-0.8 → RATE_LIMIT (throttle)
-- Risk >= 0.8 → BLOCK (block IP)
-
-Based on combined risk of {final_risk:.2f}, what action should be taken and why?
-
-Respond in this exact format:
-Action: [LOG/ALERT/RATE_LIMIT/BLOCK]
-Reasoning: [one sentence explanation]"""
+        # Ultra-simplified prompt for faster response
+        prompt = f"""Threat: Network={network_risk:.2f}, User={user_risk:.2f}, Combined={final_risk:.2f}
+Action needed (LOG<0.4, ALERT 0.4-0.6, RATE_LIMIT 0.6-0.8, BLOCK>=0.8)?
+Format: Action: [ACTION]"""
         
         try:
             # Call Ollama API without JSON format requirement
@@ -109,11 +94,13 @@ Reasoning: [one sentence explanation]"""
                     "prompt": prompt,
                     "stream": False,
                     "options": {
-                        "temperature": 0.3,
-                        "num_predict": 100  # Reduced from 150 for faster response
+                        "temperature": 0.1,  # More deterministic
+                        "num_predict": 20,   # Minimal tokens for fast response
+                        "top_k": 10,
+                        "top_p": 0.5
                     }
                 },
-                timeout=60  # Increased for complex reasoning
+                timeout=10  # Reduced for simple classification
             )
             
             if response.status_code == 200:
