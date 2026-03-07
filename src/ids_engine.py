@@ -89,23 +89,23 @@ class IDSEngine:
             traffic_intensity
         ]])
         
-        # Use Isolation Forest model to predict anomaly
-        # Returns -1 for anomalies, 1 for normal
+        # Use ML model to predict anomaly
+        # For RandomForestClassifier: 0 = benign, 1 = attack
         prediction = self.model.predict(features)[0]
         
-        # Get anomaly score (lower = more anomalous)
-        anomaly_score = self.model.decision_function(features)[0]
+        # Get prediction probability for risk scoring
+        prediction_proba = self.model.predict_proba(features)[0]
         
-        # Convert anomaly score to risk (0-1 scale)
-        # Isolation Forest scores typically range from -0.5 to 0.5
-        # More negative = more anomalous = higher risk
-        if prediction == -1:  # Anomaly detected
-            # Map anomaly score to risk (0.6 to 0.95)
-            # More negative score = higher risk
-            risk = min(0.95, max(0.60, 0.75 - (anomaly_score * 0.5)))
-        else:  # Normal traffic
-            # Low risk for normal traffic
-            risk = 0.05
+        # Convert prediction to risk (0-1 scale)
+        if prediction == 1:  # Attack detected
+            # Use probability of attack class as risk
+            # Typically ranges from 0.5 to 1.0 for positive predictions
+            attack_confidence = prediction_proba[1]
+            risk = min(0.95, max(0.60, attack_confidence))
+        else:  # Benign traffic
+            # Low risk for benign traffic
+            benign_confidence = prediction_proba[0]
+            risk = max(0.05, 1.0 - benign_confidence)
         
         # Add rule-based boost for extreme values (safety net)
         if network_in > 8_000_000 or packets_in > 15_000:
@@ -113,7 +113,7 @@ class IDSEngine:
         elif network_in > 4_000_000 or packets_in > 8_000:
             risk = max(risk, 0.85)
         
-        print(f"  Model prediction: {'ANOMALY' if prediction == -1 else 'NORMAL'} (score: {anomaly_score:.3f}, risk: {risk:.2f})")
+        print(f"  Model prediction: {'ATTACK' if prediction == 1 else 'BENIGN'} (confidence: {prediction_proba[prediction]:.3f}, risk: {risk:.2f})")
 
         return [{
             "ip": "EC2_INSTANCE",
