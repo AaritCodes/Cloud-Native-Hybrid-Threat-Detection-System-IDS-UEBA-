@@ -113,7 +113,7 @@ Reasoning: [one sentence explanation]"""
                         "num_predict": 100  # Reduced from 150 for faster response
                     }
                 },
-                timeout=15  # Reduced from 30 seconds
+                timeout=60  # Increased for complex reasoning
             )
             
             if response.status_code == 200:
