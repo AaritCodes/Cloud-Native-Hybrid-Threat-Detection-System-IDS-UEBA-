@@ -74,15 +74,19 @@ class IDSEngine:
         packets_in = self.get_metric("NetworkPacketsIn")
 
         # Prepare features for the model
-        # Features: [network_bytes, network_packets, bytes_per_packet, packet_rate]
+        # Features: [network_bytes, network_packets, bytes_per_packet, packet_rate, byte_rate, traffic_intensity]
         bytes_per_packet = network_in / packets_in if packets_in > 0 else 0
         packet_rate = packets_in / 300  # packets per second (5-minute window)
+        byte_rate = network_in / 300  # bytes per second (5-minute window)
+        traffic_intensity = (network_in / self.baseline_network_in) if self.baseline_network_in > 0 else 1.0
         
         features = np.array([[
             network_in,
             packets_in,
             bytes_per_packet,
-            packet_rate
+            packet_rate,
+            byte_rate,
+            traffic_intensity
         ]])
         
         # Use Isolation Forest model to predict anomaly
