@@ -486,7 +486,7 @@ if __name__ == "__main__":
         confidence=0.85,
         reasoning="High network traffic with moderate user anomaly",
         risk_assessment="HIGH",
-        ai_model="ollama/llama3",
+        ai_model="ollama/qwen2.5:0.5b",
     )
     print(f"Stored decision #{did}")
 

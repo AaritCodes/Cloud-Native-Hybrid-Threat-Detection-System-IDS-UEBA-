@@ -21,7 +21,7 @@ class OllamaAgent:
     """
     
     def __init__(self, 
-                 model: str = "llama3:latest",
+                 model: str = "phi3:mini",
                  base_url: str = "http://localhost:11434"):
         """
         Initialize Ollama agent
@@ -100,7 +100,7 @@ Format: Action: [ACTION]"""
                         "top_p": 0.5
                     }
                 },
-                timeout=10  # Reduced for simple classification
+                timeout=120  # Increased for local model loading
             )
             
             if response.status_code == 200:
@@ -318,7 +318,7 @@ if __name__ == "__main__":
     print("Testing Ollama Agent...\n")
     
     # Initialize agent
-    agent = OllamaAgent(model="llama3:latest")
+    agent = OllamaAgent(model="qwen2.5:0.5b")
     
     # Test decision
     print("\nAnalyzing threat...")

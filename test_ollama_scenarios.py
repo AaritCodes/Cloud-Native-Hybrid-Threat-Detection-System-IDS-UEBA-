@@ -9,8 +9,7 @@ print("="*70)
 print("Testing Ollama AI Agent with Different Threat Scenarios")
 print("="*70)
 
-# Initialize agent
-agent = OllamaAgent(model="llama3:latest")
+agent = OllamaAgent(model="qwen2.5:0.5b")
 
 # Test scenarios
 scenarios = [

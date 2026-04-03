@@ -73,10 +73,10 @@ class AgenticThreatAgent:
 
     def __init__(
         self,
-        model: str = "llama3:latest",
+        model: str = "qwen2.5:0.5b",
         base_url: str = "http://localhost:11434",
         temperature: float = 0.3,
-        max_tokens: int = 800,
+        max_tokens: int = 400,
     ):
         """
         Initialize the agentic threat agent.
@@ -87,12 +87,45 @@ class AgenticThreatAgent:
             temperature: LLM temperature (lower = more consistent)
             max_tokens: Max tokens per LLM response
         """
-        self.model = model
         self.base_url = base_url
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self.model = self._resolve_model(model)
         self.ollama_available = self._check_ollama()
         self.reasoning_trace: List[Dict] = []  # Full trace for debugging
+
+    # ── Model resolution ────────────────────────────────────────────
+
+    def _resolve_model(self, preferred: str) -> str:
+        """Pick the best available model, preferring the user's choice."""
+        try:
+            resp = requests.get(f"{self.base_url}/api/tags", timeout=5)
+            if resp.status_code != 200:
+                return preferred
+            available = [m["name"] for m in resp.json().get("models", [])]
+            if not available:
+                return preferred
+            # Exact match
+            if preferred in available:
+                return preferred
+            # Match without tag (e.g. llama3 matches llama3:latest)
+            base = preferred.split(":")[0]
+            for m in available:
+                if m.startswith(base):
+                    logger.info(f"Resolved model '{preferred}' → '{m}'")
+                    return m
+            # Preferred not found — pick fastest available small model
+            fast_preference = ["phi3:mini", "phi3", "phi", "mistral", "llama3:latest"]
+            for candidate in fast_preference:
+                for m in available:
+                    if m.startswith(candidate.split(":")[0]):
+                        logger.info(f"Model '{preferred}' unavailable. Using '{m}' instead.")
+                        return m
+            # Last resort: first available
+            logger.info(f"Model '{preferred}' unavailable. Using '{available[0]}'.")
+            return available[0]
+        except Exception:
+            return preferred
 
     # ── Connection check ───────────────────────────────────────────
 
@@ -212,27 +245,24 @@ RULE-BASED RECOMMENDATION: {self._rule_action(final_risk)}"""
         """
         Ask the LLM what tools it wants to call, then execute them.
         """
-        tools_desc = _get_tools().get_tools_description()
+        # Compact tool list (shorter prompt = faster inference)
+        tool_names = list(_get_tools().TOOL_REGISTRY.keys())
+        tool_list = ", ".join(tool_names)
 
-        think_prompt = f"""{observation}
+        think_prompt = f"""THREAT: IP={ip_address} NetRisk={network_risk:.2f} UserRisk={user_risk:.2f} Combined={0.6*network_risk+0.4*user_risk:.2f}
 
-You are a cybersecurity AI agent. Before making a final decision, you may call tools to gather more context.
-
-{tools_desc}
-
-Based on the threat data above, which tools should you call to make a better decision?
-Respond in this EXACT format (pick 0-3 tools):
-
-THINKING: <your reasoning about what information you need>
+Available tools: {tool_list}
+Pick 0-3 tools to gather context. Format:
+THINKING: <reason>
 TOOL_CALLS:
-- tool_name(arg1=value1, arg2=value2)
-- tool_name(arg1=value1)
+- tool_name(arg=val)
 
-If you don't need any tools, respond:
-THINKING: <reasoning>
+Or if none needed:
+THINKING: <reason>
 TOOL_CALLS: none"""
 
-        response_text = self._call_ollama(think_prompt)
+        logger.info("THINK phase: selecting tools...")
+        response_text = self._call_ollama(think_prompt, max_tokens=200)
         self.reasoning_trace.append({"phase": "THINK", "prompt_summary": "tool selection", "response": response_text})
 
         # Parse tool calls from the response
@@ -319,44 +349,31 @@ TOOL_CALLS: none"""
         """
         Final decision with all gathered context.
         """
-        # Format tool results for the prompt
+        # Format tool results for the prompt (keep compact for faster inference)
         if tool_results:
-            context_lines = ["GATHERED INTELLIGENCE:"]
+            context_lines = ["INTEL:"]
             for tool_name, result in tool_results.items():
-                context_lines.append(f"\n[{tool_name}]:")
-                # Truncate large results
-                result_str = json.dumps(result, indent=2, default=str)
-                if len(result_str) > 500:
-                    result_str = result_str[:500] + "..."
-                context_lines.append(result_str)
+                # Extract only the most relevant fields to keep prompt short
+                compact = self._compact_tool_result(tool_name, result)
+                context_lines.append(f"[{tool_name}]: {compact}")
             gathered = "\n".join(context_lines)
         else:
             gathered = "No additional intelligence gathered."
 
-        decide_prompt = f"""{observation}
-
+        decide_prompt = f"""THREAT: Combined risk={final_risk:.2f}. Rule says: {self._rule_action(final_risk)}
 {gathered}
 
-You are a cybersecurity AI agent. Based on ALL the information above, make your final decision.
+Rules: LOG<0.4, ALERT 0.4-0.6, RATE_LIMIT 0.6-0.8, BLOCK>=0.8.
+You may override if intelligence justifies it.
 
-ACTION RULES:
-- LOG: Low risk, just record (combined risk < 0.4)
-- ALERT: Medium risk, notify security team (risk 0.4-0.6)
-- RATE_LIMIT: High risk, throttle traffic (risk 0.6-0.8)
-- BLOCK: Critical risk, block IP immediately (risk >= 0.8)
-
-You may override the rule-based thresholds if the gathered intelligence justifies it.
-For example:
-- A known malicious IP with risk 0.5 could warrant RATE_LIMIT instead of just ALERT
-- A first-time IP during business hours with risk 0.65 might only need ALERT
-
-Respond in this EXACT format:
+Respond EXACTLY:
 ACTION: [LOG/ALERT/RATE_LIMIT/BLOCK]
 CONFIDENCE: [0.0-1.0]
 RISK_LEVEL: [LOW/MEDIUM/HIGH/CRITICAL]
-REASONING: [2-3 sentence explanation considering all evidence]"""
+REASONING: [1-2 sentences]"""
 
-        response_text = self._call_ollama(decide_prompt)
+        logger.info("DECIDE phase: making final decision...")
+        response_text = self._call_ollama(decide_prompt, max_tokens=150)
         self.reasoning_trace.append({"phase": "DECIDE", "response": response_text})
 
         # Parse the structured response
@@ -489,8 +506,9 @@ REASONING: [2-3 sentence explanation considering all evidence]"""
 
     # ── LLM communication ──────────────────────────────────────────
 
-    def _call_ollama(self, prompt: str) -> str:
+    def _call_ollama(self, prompt: str, max_tokens: int | None = None) -> str:
         """Send a prompt to Ollama and return the response text."""
+        tokens = max_tokens or self.max_tokens
         try:
             resp = requests.post(
                 f"{self.base_url}/api/generate",
@@ -500,16 +518,28 @@ REASONING: [2-3 sentence explanation considering all evidence]"""
                     "stream": False,
                     "options": {
                         "temperature": self.temperature,
-                        "num_predict": self.max_tokens,
+                        "num_predict": tokens,
+                        "top_k": 20,
+                        "top_p": 0.7,
                     },
                 },
-                timeout=60,
+                timeout=180,
             )
             if resp.status_code == 200:
                 return resp.json().get("response", "")
             else:
                 logger.warning(f"Ollama returned {resp.status_code}")
                 return ""
+        except requests.exceptions.ReadTimeout:
+            logger.warning(
+                f"Ollama timed out (180s). Model '{self.model}' may be too slow. "
+                "Consider using a smaller model like phi3:mini."
+            )
+            return ""
+        except requests.exceptions.ConnectionError:
+            logger.warning("Cannot connect to Ollama. Is 'ollama serve' running?")
+            self.ollama_available = False
+            return ""
         except Exception as e:
             logger.warning(f"Ollama call failed: {e}")
             return ""
@@ -537,6 +567,32 @@ REASONING: [2-3 sentence explanation considering all evidence]"""
             except ValueError:
                 pass
         return default
+
+    @staticmethod
+    def _compact_tool_result(tool_name: str, result: Dict) -> str:
+        """Summarise a tool result into a short string for the LLM prompt."""
+        if not isinstance(result, dict):
+            return str(result)[:120]
+        # Pick the most useful keys depending on tool
+        if "reputation_score" in result:
+            return (
+                f"status={result.get('status')}, reputation={result.get('reputation_score')}, "
+                f"events={result.get('total_events',0)}, blocks={result.get('total_blocks',0)}, "
+                f"assessment={result.get('assessment','')}"
+            )
+        if "total_past_decisions" in result:
+            return f"past_decisions={result.get('total_past_decisions',0)}, message={result.get('message','')}"
+        if "most_common_action" in result:
+            return (
+                f"similar={result.get('total_similar',0)}, "
+                f"most_common_action={result.get('most_common_action','')}, "
+                f"actions={result.get('action_distribution',{})}"
+            )
+        if "recent_events_1h" in result:
+            return f"status={result.get('status')}, events_1h={result.get('recent_events_1h',0)}"
+        # Generic fallback — keep it short
+        summary = json.dumps(result, default=str)
+        return summary[:200] + ("..." if len(summary) > 200 else "")
 
     @staticmethod
     def _rule_action(final_risk: float) -> str:
@@ -594,7 +650,7 @@ if __name__ == "__main__":
     print("  ReAct Agentic Threat Agent — Test")
     print("=" * 70)
 
-    agent = AgenticThreatAgent(model="llama3:latest")
+    agent = AgenticThreatAgent(model="qwen2.5:0.5b")
 
     # ── Test 1: Low risk ────────────────────────────────
     print("\n--- Test 1: Low Risk ---")
