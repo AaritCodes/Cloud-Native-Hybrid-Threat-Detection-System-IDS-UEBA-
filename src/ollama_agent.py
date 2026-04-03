@@ -22,7 +22,7 @@ class OllamaAgent:
     
     def __init__(self, 
                  model: str = "phi3:mini",
-                 base_url: str = "http://localhost:11434"):
+                 base_url: str = None):
         """
         Initialize Ollama agent
         
@@ -30,8 +30,9 @@ class OllamaAgent:
             model: Ollama model to use (llama3:latest, mistral, phi, etc.)
             base_url: Ollama API endpoint
         """
+        import os
         self.model = model
-        self.base_url = base_url
+        self.base_url = base_url or os.environ.get("OLLAMA_URL", "http://localhost:11434")
         self.decision_history = []
         
         # Verify Ollama is running
