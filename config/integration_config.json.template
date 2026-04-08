@@ -1,0 +1,77 @@
+{
+  "_comment": "Integration configuration for N8N, LangChain RAG, and LangFuse.",
+  "_instructions": "Copy this file to config/integration_config.json and fill in your values. Sensitive credentials should be set as environment variables instead.",
+
+  "n8n": {
+    "_comment": "N8N workflow automation webhook settings.",
+    "enabled": true,
+    "webhook_url": "${N8N_WEBHOOK_URL}",
+    "timeout_seconds": 5,
+    "events": {
+      "threat_alert": true,
+      "block_ip": true,
+      "rate_limit": true,
+      "detection_cycle_summary": true,
+      "system_start": true,
+      "system_stop": true
+    },
+    "min_threat_level_to_send": "MEDIUM",
+    "_setup_notes": [
+      "1. Open your N8N instance and create a new workflow.",
+      "2. Add a 'Webhook' trigger node; copy the webhook URL into N8N_WEBHOOK_URL.",
+      "3. Add downstream nodes: Slack / Teams message, JIRA ticket, PagerDuty alert, etc.",
+      "4. The payload shape is documented in src/n8n_integration.py."
+    ]
+  },
+
+  "rag": {
+    "_comment": "LangChain RAG threat-intelligence vector store settings.",
+    "enabled": true,
+    "persist_dir": "${RAG_PERSIST_DIR:.chroma_db}",
+    "top_k": 3,
+    "embedding_model": "all-MiniLM-L6-v2",
+    "_setup_notes": [
+      "1. pip install langchain langchain-community>=0.3.27 chromadb sentence-transformers",
+      "2. The vector store is built automatically from built-in threat-intel documents.",
+      "3. Add custom documents at runtime via ThreatIntelRAG.add_documents().",
+      "4. Set RAG_PERSIST_DIR to control where ChromaDB stores its data."
+    ]
+  },
+
+  "langfuse": {
+    "_comment": "LangFuse LLM observability and tracing settings.",
+    "enabled": true,
+    "host": "${LANGFUSE_HOST:https://cloud.langfuse.com}",
+    "public_key": "${LANGFUSE_PUBLIC_KEY}",
+    "secret_key": "${LANGFUSE_SECRET_KEY}",
+    "_setup_notes": [
+      "1. pip install langfuse",
+      "2. Sign up at https://cloud.langfuse.com (free tier available) or self-host.",
+      "3. Create a project and copy the public/secret keys.",
+      "4. Set LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY environment variables.",
+      "5. All LLM calls in the pipeline are traced automatically.",
+      "6. Call pipeline.record_outcome(trace_id, 'true_positive', 1.0) to score decisions."
+    ]
+  },
+
+  "ollama": {
+    "_comment": "Ollama local LLM settings (used by the RAG-augmented analysis step).",
+    "base_url": "${OLLAMA_URL:http://localhost:11434}",
+    "model": "${OLLAMA_MODEL:qwen2.5:0.5b}",
+    "_setup_notes": [
+      "1. Install Ollama from https://ollama.ai/",
+      "2. Run: ollama serve",
+      "3. Pull a model: ollama pull qwen2.5:0.5b  (or phi3:mini, llama3, mistral, etc.)",
+      "4. The pipeline falls back to rule-based decisions when Ollama is unavailable."
+    ]
+  },
+
+  "pipeline": {
+    "_comment": "Overall integration pipeline settings.",
+    "enabled": true,
+    "process_threats_above_risk": 0.3,
+    "_setup_notes": [
+      "Set INTEGRATION_ENABLED=false to disable all integrations without code changes."
+    ]
+  }
+}
