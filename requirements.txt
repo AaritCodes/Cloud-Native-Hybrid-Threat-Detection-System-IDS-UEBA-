@@ -13,3 +13,21 @@ flask>=3.0.0
 # Utilities
 python-dateutil>=2.8.2
 requests>=2.31.0
+
+# ── N8N Integration ────────────────────────────────────────────────────────
+# N8N uses the existing `requests` library (no additional packages needed).
+# Configure via the N8N_WEBHOOK_URL environment variable.
+
+# ── LangChain RAG Integration (Optional) ──────────────────────────────────
+# Enables threat-intelligence retrieval-augmented generation.
+# Install with: pip install langchain langchain-community chromadb sentence-transformers
+langchain>=0.3.0
+langchain-community>=0.3.27
+chromadb>=0.5.0
+sentence-transformers>=2.2.0
+
+# ── LangFuse Observability (Optional) ─────────────────────────────────────
+# Enables LLM call tracing and quality scoring.
+# Configure via LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY environment variables.
+# Install with: pip install langfuse
+langfuse>=2.0.0
