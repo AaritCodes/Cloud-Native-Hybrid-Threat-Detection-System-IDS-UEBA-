@@ -1,0 +1,24 @@
+{
+  "ids": {
+    "samples": 35835,
+    "positives": 24242,
+    "negatives": 11593,
+    "tp": 0,
+    "tn": 11591,
+    "fp": 2,
+    "fn": 24242,
+    "auc": 0.49967558066787,
+    "label_definition": "From demo_materials/ddos_dataset.csv: REJECT=1, ACCEPT=0"
+  },
+  "ueba": {
+    "samples": 570,
+    "positives": 452,
+    "negatives": 118,
+    "tp": 0,
+    "tn": 89,
+    "fp": 29,
+    "fn": 452,
+    "auc": 0.2380005999700015,
+    "label_definition": "From demo_materials/parsed_logs.csv heuristic: public IPv4 source_ip=1, else 0"
+  }
+}

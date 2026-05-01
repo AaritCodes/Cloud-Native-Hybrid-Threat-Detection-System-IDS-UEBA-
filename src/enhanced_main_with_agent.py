@@ -78,19 +78,55 @@ class EnhancedThreatDetectionSystemWithAgent:
                 security_group_id=security_group_id,
                 region="ap-south-1",
                 block_timeout_minutes=10,
-                monitoring_interval=60  # Check every 60 seconds as per requirements
+                monitoring_interval=60,  # Check every 60 seconds as per requirements
+                waf_ip_set_name="AgenticRateLimitIPSet",
+                waf_ip_set_id="7ef55e05-d14d-4315-a6e3-7d98b6869b89",
+                waf_scope="REGIONAL"
             )
             print("✅ Autonomous Response Agent enabled")
         else:
             self.response_agent = None
             print("⚠️  Autonomous Response Agent disabled (manual mode)")
         
-        # Statistics tracking
+        # Statistics tracking and Dashboard State
+        import json
+        from collections import deque
+        
         self.stats = {
             "total_cycles": 0,
             "threats_detected": 0,
             "autonomous_actions": 0,
             "start_time": datetime.now()
+        }
+        
+        # State object strictly for the Thin client Web Dashboard
+        self.web_state = {
+            "timestamps": deque(maxlen=50),
+            "network_risk": deque(maxlen=50),
+            "user_risk": deque(maxlen=50),
+            "final_risk": deque(maxlen=50),
+            "actions": deque(maxlen=50),
+            "events": deque(maxlen=20),
+            "stats": {
+                "total_cycles": 0,
+                "log_count": 0,
+                "alert_count": 0,
+                "rate_limit_count": 0,
+                "block_count": 0,
+                "ai_available": self.enable_autonomous_response,
+                "model": "agentic-response-ai",
+                "start_time": datetime.now().isoformat(),
+            },
+            "latest": {
+                "network_risk": 0,
+                "user_risk": 0,
+                "final_risk": 0,
+                "action": "LOG",
+                "reasoning": "Waiting for detections...",
+                "confidence": 0,
+                "threat_level": "LOW",
+                "tools_used": [],
+            },
         }
         
         print("✅ System initialized successfully!")
@@ -157,6 +193,7 @@ Network Traffic: {network_bytes:,.0f} bytes, {network_packets:,.0f} packets
                     )
                     self.stats["threats_detected"] += 1
                 
+                action_taken = "LOG"
                 # Autonomous response (if enabled)
                 if self.enable_autonomous_response and self.response_agent:
                     print("\n🤖 Autonomous Response Agent evaluating threat...")
@@ -167,14 +204,63 @@ Network Traffic: {network_bytes:,.0f} bytes, {network_packets:,.0f} packets
                         network_risk=network_risk,
                         user_risk=user_risk
                     )
+                    action_taken = action
                     
                     if action in ["ALERT", "RATE_LIMIT", "BLOCK"]:
                         self.stats["autonomous_actions"] += 1
+                        self.web_state["stats"][f"{action.lower()}_count"] += 1
+                    else:
+                        self.web_state["stats"]["log_count"] += 1
                     
                     print(f"✅ Autonomous action taken: {action}")
                     
                     # Check for expired blocks
                     self.response_agent.check_and_unblock_expired()
+                
+                # Update web state
+                now = datetime.now()
+                self.web_state["timestamps"].append(now.isoformat())
+                self.web_state["network_risk"].append(float(network_risk))
+                self.web_state["user_risk"].append(float(user_risk))
+                self.web_state["final_risk"].append(float(final_risk))
+                self.web_state["actions"].append(action_taken)
+                
+                self.web_state["stats"]["total_cycles"] += 1
+                
+                self.web_state["latest"] = {
+                    "network_risk": float(network_risk),
+                    "user_risk": float(user_risk),
+                    "final_risk": float(final_risk),
+                    "action": action_taken,
+                    "reasoning": f"Enhanced Engine decided action: {action_taken}. (See terminal for complete Live AI Reasoning process)",
+                    "confidence": 0.85,
+                    "threat_level": level,
+                    "tools_used": ["ids_engine", "ueba_engine", "response_agent"] if self.enable_autonomous_response else ["ids_engine", "ueba_engine"],
+                }
+                
+                self.web_state["events"].append({
+                    "time": now.strftime("%H:%M:%S"),
+                    "action": action_taken,
+                    "msg": f"IP: {ip} | Net: {network_risk:.2f} User: {user_risk:.2f} → Risk {final_risk:.2f} ({level})",
+                })
+                
+                # Write to json file
+                try:
+                    state_to_save = {
+                        "timestamps": list(self.web_state["timestamps"]),
+                        "network_risk": list(self.web_state["network_risk"]),
+                        "user_risk": list(self.web_state["user_risk"]),
+                        "final_risk": list(self.web_state["final_risk"]),
+                        "actions": list(self.web_state["actions"]),
+                        "events": list(self.web_state["events"]),
+                        "stats": self.web_state["stats"],
+                        "latest": self.web_state["latest"],
+                    }
+                    import json
+                    with open("web_state.json", "w") as f:
+                        json.dump(state_to_save, f)
+                except Exception as e:
+                    print(f"Failed to write dashboard state: {e}")
             
             # Update statistics
             self.stats["total_cycles"] += 1

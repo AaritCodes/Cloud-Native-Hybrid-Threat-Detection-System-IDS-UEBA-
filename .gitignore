@@ -41,3 +41,8 @@ threat_alerts.log
 *.tmp
 *.bak
 *.backup
+
+# Vector Database
+.chroma_db/
+web_state.json
+

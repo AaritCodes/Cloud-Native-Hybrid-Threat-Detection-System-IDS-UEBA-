@@ -51,8 +51,19 @@ logger = logging.getLogger(__name__)
 try:
     from langchain_community.vectorstores import Chroma
     from langchain_community.embeddings import SentenceTransformerEmbeddings
-    from langchain.text_splitter import RecursiveCharacterTextSplitter
-    from langchain.schema import Document
+    try:
+        # Newer LangChain layout
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+    except Exception:
+        # Older LangChain layout
+        from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+    try:
+        # Newer LangChain layout
+        from langchain_core.documents import Document
+    except Exception:
+        # Older LangChain layout
+        from langchain.schema import Document
 
     _LANGCHAIN_AVAILABLE = True
 except ImportError:

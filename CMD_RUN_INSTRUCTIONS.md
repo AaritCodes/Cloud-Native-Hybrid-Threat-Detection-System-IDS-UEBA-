@@ -1,37 +1,33 @@
-# 💻 CMD Execution Cheat Sheet
+# 💻 Final Demo Day Execution Guide
 
-This guide contains the **exact** commands you need to copy-paste if you are using the traditional Windows **Command Prompt (CMD)** instead of PowerShell. 
+This guide contains the exact commands for your Demo Day flow. The architecture has been refined so your `enhanced_main_with_agent.py` acts as the true "brain" hitting AWS, while the beautiful `web_dashboard.py` acts as a pure visual display connected to it.
 
 ---
 
-### Step 1: Pre-Demo Setup
-
-*Open a Command Prompt (`cmd.exe`) and navigate to your project folder:*
-```cmd
-cd "C:\Users\aarit\Downloads\unified threat detection"
-```
-
-*Activate the virtual environment (This is different from PowerShell):*
-```cmd
-venv\Scripts\activate.bat
-```
-
-*Ensure your AI is running (Optional: do this in a new, separate CMD window):*
+### Terminal 1: Run the Agentic AI (Optional but Recommended)
+*Ensure Ollama is running in the background for real-time reasoning:*
 ```cmd
 ollama serve
 ```
 
----
-
-### Step 2: Running the Full Agentic AI Demo
-
-*In your first terminal (where the `venv` is activated):*
+### Terminal 2: Start the Main Brain (Detection & AWS Response)
+*This is your main focus during the demo. It runs the loops and actively blocks IPs on AWS:*
 ```cmd
+cd "C:\Users\aarit\Downloads\unified threat detection"
+venv\Scripts\activate.bat
 python src\enhanced_main_with_agent.py
 ```
-*(This starts the monitoring system. Keep it running to watch the AI's real-time reasoning).*
 
-*Open a **second** Command Prompt window specifically for simulating the attack:*
+### Terminal 3: Start the Premium Visualization Dashboard
+*This dashboard is now a lightweight "Thin Client" perfectly synced to the main brain. Keep it running on a side window!*
+```cmd
+cd "C:\Users\aarit\Downloads\unified threat detection"
+venv\Scripts\activate.bat
+python src\web_dashboard.py
+```
+
+### Terminal 4: Run the Attack Simulation
+*When you're ready to show the system responding to a live threat:*
 ```cmd
 cd "C:\Users\aarit\Downloads\unified threat detection"
 venv\Scripts\activate.bat
@@ -40,16 +36,8 @@ python tests\attack_simulator.py
 
 ---
 
-### Step 3: Running the Core Evaluation Test (Optional)
-
-*If you want to run the clean 4/4 matching scenario script we just fixed, use this command (ensure `venv` is activated):*
+### Core Evaluation Test (Optional)
+*If you need to run the pure 4/4 scenario script:*
 ```cmd
 python test_ollama_scenarios.py
-```
-
-### Step 4: Running the Streamlit Dashboard (Optional)
-
-*If your project has the visual dashboard ready, run it with:*
-```cmd
-python -m streamlit run src\dashboard.py
 ```

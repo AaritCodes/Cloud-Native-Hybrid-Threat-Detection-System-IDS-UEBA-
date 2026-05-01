@@ -20,17 +20,8 @@ if sys.platform == 'win32':
     except:
         pass
 
-# Import detection engines
-try:
-    from src.ids_engine import IDSEngine
-    from src.ueba_engine import UEBAEngine
-    from src.threat_fusion_engine import combine_risks
-    from src.agentic_threat_agent import AgenticThreatAgent
-except ModuleNotFoundError:
-    from ids_engine import IDSEngine
-    from ueba_engine import UEBAEngine
-    from threat_fusion_engine import combine_risks
-    from agentic_threat_agent import AgenticThreatAgent
+# Engines are now running externally via enhanced_main_with_agent.py
+# The dashboard acts as a stateless thin client reading web_state.json
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -450,114 +441,9 @@ window.addEventListener('resize', drawChart);
 """
 
 
-# ── Detection loop ──
-def detection_loop():
-    """Background thread running detection cycles."""
-    try:
-        ids = IDSEngine("models/ddos_model.pkl")
-        ueba = UEBAEngine("models/uba_model.pkl")
-    except Exception as e:
-        print(f"Engine init error: {e}")
-        return
-
-    # Try to init AI agent
-    ai_agent = None
-    try:
-        ai_agent = AgenticThreatAgent()
-        if ai_agent.ollama_available:
-            state["stats"]["ai_available"] = True
-            state["stats"]["model"] = ai_agent.model
-            print(f"  AI Agent connected: {ai_agent.model}")
-        else:
-            print("  AI Agent: Ollama not available, using rule-based fallback")
-    except Exception as e:
-        print(f"  AI Agent init failed: {e}")
-
-    print("\n  Detection loop started. Refresh dashboard to see updates.\n")
-
-    while True:
-        try:
-            # Run detection
-            net_results = ids.detect()
-            user_results = ueba.detect()
-
-            for net in net_results:
-                network_risk = net["network_risk"]
-                ip = net.get("ip", "unknown")
-
-                matched = next((u for u in user_results if u["ip"] == ip), None)
-                user_risk = matched["user_risk"] if matched else 0.1
-
-                final_risk, threat_level = combine_risks(network_risk, user_risk)
-
-                # Get AI decision or fallback
-                action = "LOG"
-                reasoning = ""
-                confidence = 0.7
-                tools_used = []
-
-                if ai_agent:
-                    try:
-                        decision = ai_agent.analyze_and_decide(
-                            network_risk=network_risk,
-                            user_risk=user_risk,
-                            ip_address=ip,
-                            context={
-                                "time": datetime.now().isoformat(),
-                                "business_hours": 8 <= datetime.now().hour <= 18,
-                                "recent_attacks": state["stats"]["alert_count"] + state["stats"]["block_count"],
-                            },
-                        )
-                        action = decision.get("action", "LOG")
-                        reasoning = decision.get("reasoning", "")
-                        confidence = decision.get("confidence", 0.7)
-                        tools_used = decision.get("tools_used", [])
-                    except Exception as e:
-                        reasoning = f"AI error: {e}. Fallback to rules."
-                        if final_risk < 0.4: action = "LOG"
-                        elif final_risk < 0.6: action = "ALERT"
-                        elif final_risk < 0.8: action = "RATE_LIMIT"
-                        else: action = "BLOCK"
-                else:
-                    if final_risk < 0.4: action = "LOG"
-                    elif final_risk < 0.6: action = "ALERT"
-                    elif final_risk < 0.8: action = "RATE_LIMIT"
-                    else: action = "BLOCK"
-                    reasoning = f"Rule-based: Combined risk {final_risk:.2f} maps to {action}."
-
-                # Update state
-                now = datetime.now()
-                state["timestamps"].append(now.isoformat())
-                state["network_risk"].append(round(network_risk, 4))
-                state["user_risk"].append(round(user_risk, 4))
-                state["final_risk"].append(round(final_risk, 4))
-                state["actions"].append(action)
-
-                state["stats"]["total_cycles"] += 1
-                state["stats"][f"{action.lower()}_count"] += 1
-
-                state["latest"] = {
-                    "network_risk": round(network_risk, 4),
-                    "user_risk": round(user_risk, 4),
-                    "final_risk": round(final_risk, 4),
-                    "action": action,
-                    "reasoning": reasoning,
-                    "confidence": round(confidence, 3),
-                    "threat_level": threat_level,
-                    "tools_used": tools_used,
-                }
-
-                state["events"].append({
-                    "time": now.strftime("%H:%M:%S"),
-                    "action": action,
-                    "msg": f"IP: {ip} | Net: {network_risk:.2f} User: {user_risk:.2f} → {final_risk:.2f} ({threat_level})",
-                })
-
-            time.sleep(10)
-
-        except Exception as e:
-            print(f"Detection error: {e}")
-            time.sleep(5)
+# ── Dashboard is now a Thin Client ──
+# Detection loop is handled natively by enhanced_main_with_agent.py
+# which writes state to web_state.json periodically.
 
 
 # ── Flask routes ──
@@ -568,6 +454,13 @@ def index():
 
 @app.route("/api/state")
 def api_state():
+    try:
+        if os.path.exists("web_state.json"):
+            with open("web_state.json", "r") as f:
+                return jsonify(json.load(f))
+    except Exception as e:
+        print(f"Error reading state: {e}")
+        
     return jsonify({
         "timestamps": list(state["timestamps"]),
         "network_risk": list(state["network_risk"]),
@@ -584,10 +477,8 @@ if __name__ == "__main__":
     print("=" * 60)
     print("  Hybrid Threat Detection — Command Center")
     print("=" * 60)
-    print("  Starting detection engines...")
-
-    t = threading.Thread(target=detection_loop, daemon=True)
-    t.start()
+    print("  Dashboard running in Thin Client Mode...")
+    print("  Make sure to run enhanced_main_with_agent.py to populate state!")
 
     print("  Dashboard: http://localhost:5000")
     print("=" * 60)

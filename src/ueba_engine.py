@@ -35,15 +35,16 @@ class UEBAEngine:
 
         response = self.s3.list_objects_v2(
             Bucket=BUCKET,
-            Prefix=prefix,
-            MaxKeys=5   # only latest few files
+            Prefix=prefix
         )
 
         if "Contents" not in response:
             print("No logs found for today.")
             return pd.DataFrame()
 
-        for obj in response["Contents"]:
+        # Sort and take only the latest 5 files
+        latest_objects = sorted(response["Contents"], key=lambda x: x["LastModified"])[-5:]
+        for obj in latest_objects:
             key = obj["Key"]
 
             if not key.endswith(".json.gz"):

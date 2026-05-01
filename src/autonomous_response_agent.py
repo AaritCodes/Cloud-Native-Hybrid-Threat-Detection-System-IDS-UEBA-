@@ -70,7 +70,11 @@ class AutonomousResponseAgent:
         region: str = "ap-south-1",
         block_timeout_minutes: int = 10,
         monitoring_interval: int = 60,
-        enable_ai: bool = True
+        enable_ai: bool = True,
+        waf_ip_set_name: str = None,
+        waf_ip_set_id: str = None,
+        waf_scope: str = "REGIONAL",
+        rate_limit_timeout_minutes: int = 5
     ):
         """
         Initialize the Autonomous Response Agent.
@@ -81,12 +85,20 @@ class AutonomousResponseAgent:
             block_timeout_minutes: Minutes before auto-unblocking IP
             monitoring_interval: Seconds between monitoring cycles
             enable_ai: Enable Ollama AI reasoning (default: True)
+            waf_ip_set_name: AWS WAF IP Set Name (for rate limiting)
+            waf_ip_set_id: AWS WAF IP Set ID
+            waf_scope: AWS WAF Scope ('REGIONAL' or 'CLOUDFRONT')
+            rate_limit_timeout_minutes: Minutes before removing rate limit
         """
         self.security_group_id = security_group_id
         self.region = region
         self.block_timeout_minutes = block_timeout_minutes
         self.monitoring_interval = monitoring_interval
         self.enable_ai = enable_ai
+        self.waf_ip_set_name = waf_ip_set_name
+        self.waf_ip_set_id = waf_ip_set_id
+        self.waf_scope = waf_scope
+        self.rate_limit_timeout_minutes = rate_limit_timeout_minutes
         
         # Initialize Agentic AI (ReAct agent with tool-calling + persistent memory)
         if enable_ai:
@@ -106,6 +118,15 @@ class AutonomousResponseAgent:
         try:
             self.ec2_client = boto3.client('ec2', region_name=region)
             logger.info(f"AWS EC2 client initialized for region: {region}")
+            
+            # Initialize WAF client if configured
+            if self.waf_ip_set_name and self.waf_ip_set_id:
+                self.waf_client = boto3.client('wafv2', region_name=region)
+                logger.info(f"AWS WAFv2 client initialized for IP Set: {self.waf_ip_set_name}")
+            else:
+                self.waf_client = None
+                logger.info("AWS WAF integration disabled (missing IP Set Name/ID)")
+                
         except Exception as e:
             logger.error(f"Failed to initialize AWS client: {e}")
             raise
@@ -224,18 +245,72 @@ class AutonomousResponseAgent:
         print(f"🔔 Action: Alert notification sent")
         print(f"{'='*70}\n")
     
-    def simulate_rate_limiting(
+    def _update_waf_ip_set(self, ip_address: str, action: str) -> bool:
+        """
+        Helper method to add or remove an IP address from an AWS WAFv2 IP Set.
+        
+        Args:
+            ip_address: IP address to modify
+            action: 'ADD' or 'REMOVE'
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.waf_client or not self.waf_ip_set_name or not self.waf_ip_set_id:
+            return False
+            
+        cidr_ip = f"{ip_address}/32"
+        
+        try:
+            # 1. Get the current IP Set to obtain the LockToken
+            response = self.waf_client.get_ip_set(
+                Name=self.waf_ip_set_name,
+                Scope=self.waf_scope,
+                Id=self.waf_ip_set_id
+            )
+            
+            ip_set = response['IPSet']
+            lock_token = response['LockToken']
+            addresses = set(ip_set.get('Addresses', []))
+            
+            # 2. Modify the addresses
+            if action == 'ADD':
+                if cidr_ip in addresses:
+                    logger.info(f"IP {cidr_ip} is already in WAF IP Set")
+                    return True
+                addresses.add(cidr_ip)
+            elif action == 'REMOVE':
+                if cidr_ip not in addresses:
+                    logger.info(f"IP {cidr_ip} is not in WAF IP Set")
+                    return True
+                addresses.remove(cidr_ip)
+            
+            # 3. Update the IP Set
+            self.waf_client.update_ip_set(
+                Name=self.waf_ip_set_name,
+                Scope=self.waf_scope,
+                Id=self.waf_ip_set_id,
+                Addresses=list(addresses),
+                LockToken=lock_token,
+                Description="Managed by AutonomousResponseAgent"
+            )
+            
+            logger.info(f"✅ Successfully {action}ed {cidr_ip} WAF IP Set {self.waf_ip_set_name}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to {action} {cidr_ip} in WAF IP Set: {e}")
+            return False
+
+    def apply_rate_limiting(
         self,
         ip_address: str,
         risk_score: float
     ) -> None:
         """
-        Simulate rate limiting (HIGH severity action).
+        Apply rate limiting (HIGH severity action).
         
-        In production, this would integrate with:
-        - AWS WAF rate-based rules
-        - API Gateway throttling
-        - Application-level rate limiting
+        Integrates with AWS WAFv2 if configured, otherwise falls back to simulation.
         
         Args:
             ip_address: Source IP address
@@ -244,24 +319,24 @@ class AutonomousResponseAgent:
         self.rate_limited_ips[ip_address] = datetime.now()
         self.stats["total_rate_limits"] += 1
         
+        # Apply WAF integration
+        waf_success = self._update_waf_ip_set(ip_address, action='ADD')
+        
+        status_msg = "WAF ENFORCED" if waf_success else "SIMULATED"
+        
         logger.warning(
-            f"⚡ RATE LIMITING APPLIED | IP: {ip_address} | "
-            f"Risk: {risk_score:.2f} | Duration: 5 minutes"
+            f"⚡ RATE LIMITING APPLIED ({status_msg}) | IP: {ip_address} | "
+            f"Risk: {risk_score:.2f} | Duration: {self.rate_limit_timeout_minutes} minutes"
         )
         
         print(f"\n{'='*70}")
-        print(f"⚡ RATE LIMITING ACTIVATED")
+        print(f"⚡ RATE LIMITING ACTIVATED ({status_msg})")
         print(f"{'='*70}")
         print(f"🎯 IP Address: {ip_address}")
         print(f"📊 Risk Score: {risk_score:.2f}")
-        print(f"🔒 Action: Traffic rate limited to 10 req/min")
-        print(f"⏱️  Duration: 5 minutes")
+        print(f"🔒 Action: Added to WAF Rate Limit IP Set")
+        print(f"⏱️  Duration: {self.rate_limit_timeout_minutes} minutes")
         print(f"{'='*70}\n")
-        
-        # In production, implement actual rate limiting:
-        # - Update AWS WAF rule
-        # - Configure API Gateway throttling
-        # - Update load balancer rules
     
     def block_ip_address(
         self,
@@ -411,22 +486,34 @@ class AutonomousResponseAgent:
     
     def check_and_unblock_expired(self) -> None:
         """
-        Check for expired blocks and automatically unblock IPs.
+        Check for expired blocks and rate limits, automatically unblocking IPs.
         Called periodically to enforce timeout policy.
         """
         current_time = datetime.now()
-        expired_ips = []
         
+        # 1. Handle expired blocked IPs
+        expired_blocks = []
         for ip_address, blocked_info in self.blocked_ips.items():
             time_blocked = current_time - blocked_info.blocked_at
-            
             if time_blocked > timedelta(minutes=self.block_timeout_minutes):
-                expired_ips.append(ip_address)
+                expired_blocks.append(ip_address)
         
-        # Unblock expired IPs
-        for ip_address in expired_ips:
+        for ip_address in expired_blocks:
             logger.info(f"⏰ Block timeout reached for {ip_address}, unblocking...")
             self.unblock_ip_address(ip_address)
+            
+        # 2. Handle expired rate limits
+        expired_rate_limits = []
+        for ip_address, limited_at in list(self.rate_limited_ips.items()):
+            time_limited = current_time - limited_at
+            if time_limited > timedelta(minutes=self.rate_limit_timeout_minutes):
+                expired_rate_limits.append(ip_address)
+                
+        for ip_address in expired_rate_limits:
+            logger.info(f"⏰ Rate limit timeout reached for {ip_address}, removing from WAF...")
+            self._update_waf_ip_set(ip_address, action='REMOVE')
+            # Remove from tracking dictionary safely
+            self.rate_limited_ips.pop(ip_address, None)
     
     def take_action(
         self,
@@ -504,7 +591,7 @@ class AutonomousResponseAgent:
             self.send_alert(ip_address, risk_score, network_risk, user_risk, threat_level)
             
         elif action == "RATE_LIMIT":
-            self.simulate_rate_limiting(ip_address, risk_score)
+            self.apply_rate_limiting(ip_address, risk_score)
             self.send_alert(ip_address, risk_score, network_risk, user_risk, threat_level)
             
         elif action == "BLOCK":
